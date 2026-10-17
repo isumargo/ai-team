@@ -1,7 +1,7 @@
 # OpenRouter Usage Alert
 
-**Waktu:** 2026-10-17T15:50:39Z
+**Waktu:** 2026-10-17T16:10:54Z
 **Status:** ALERT
 
-Biaya mencapai $5.00
-Akumulasi: $5.32 dari $10.00
+Biaya mencapai $6.00
+Akumulasi: $6.24 dari $10.00
