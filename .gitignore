@@ -1,0 +1,19 @@
+# JANGAN PUSH — sensitif
+.env
+*.key
+*.pem
+**/secrets/
+**/credentials/
+
+# Config sensitif
+.hermes/.env
+.hermes/auth.json
+config.yaml
+*.local.yaml
+
+# Cache & sampah
+__pycache__/
+*.pyc
+/reports/
+*.log
+*.tmp
