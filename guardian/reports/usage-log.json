@@ -26,5 +26,47 @@
     "total_usage": 0.73170775,
     "spent": 0.73170775,
     "remaining": 9.26829225
+  },
+  {
+    "time": "2026-10-17T12:33:54Z",
+    "total_credits": 10,
+    "total_usage": 0.909576907,
+    "spent": 0.909576907,
+    "remaining": 9.090423093
+  },
+  {
+    "time": "2026-10-17T13:04:54Z",
+    "total_credits": 10,
+    "total_usage": 0.924186874,
+    "spent": 0.924186874,
+    "remaining": 9.075813126
+  },
+  {
+    "time": "2026-10-17T13:35:54Z",
+    "total_credits": 10,
+    "total_usage": 0.924186874,
+    "spent": 0.924186874,
+    "remaining": 9.075813126
+  },
+  {
+    "time": "2026-10-17T14:06:54Z",
+    "total_credits": 10,
+    "total_usage": 0.924186874,
+    "spent": 0.924186874,
+    "remaining": 9.075813126
+  },
+  {
+    "time": "2026-10-17T14:37:15Z",
+    "total_credits": 10,
+    "total_usage": 1.099817609,
+    "spent": 1.099817609,
+    "remaining": 8.900182391
+  },
+  {
+    "time": "2026-10-17T14:37:20Z",
+    "total_credits": 10,
+    "total_usage": 1.099817609,
+    "spent": 1.099817609,
+    "remaining": 8.900182391
   }
 ]

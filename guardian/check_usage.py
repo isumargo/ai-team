@@ -1,13 +1,9 @@
 #!/usr/bin/env python3
 """Guardian: OpenRouter cost sanitizer & auto-switch.
 
-Checks OpenRouter credit usage periodically. If accumulated cost
-crosses thresholds:
-  - $4.00 → alert EVE (warning)
-  - $5.00 → auto-switch model to backup (free/cheap)
-
-Usage: python3 /root/ai-team/guardian/check_usage.py
-Env:   OPENROUTER_API_KEY
+- Alerts every $1 increment ($1, $2, $3, $4) via alert file
+- Auto-switch at $5
+- Silent otherwise (stdout empty = no notification to chat)
 """
 
 import json
@@ -18,10 +14,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from urllib.request import Request, urlopen
 
-# --- Helpers ---
 
 def load_env(path="/root/.hermes/.env"):
-    """Load KEY=VALUE pairs from a .env file."""
     env = {}
     try:
         with open(path) as f:
@@ -36,29 +30,29 @@ def load_env(path="/root/.hermes/.env"):
         pass
     return env
 
+
 # --- Config ---
 _env = load_env()
 API_KEY = _env.get("OPENROUTER_API_KEY", os.environ.get("OPENROUTER_API_KEY", ""))
 CREDITS_URL = "https://openrouter.ai/api/v1/credits"
 
-# Model thresholds
 BACKUP_MODEL = "nvidia/nemotron-3-super-120b-a12b:free"
-COST_LIMIT = 5.00        # $ — auto-switch
-WARNING_LIMIT = 4.00     # $ — alert only
+COST_LIMIT = 5.00
 
-# Paths
 TEAM_DIR = Path("/root/ai-team")
 REPORT_DIR = TEAM_DIR / "guardian" / "reports"
 USAGE_LOG = REPORT_DIR / "usage-log.json"
 ALERT_FILE = REPORT_DIR / "usage-alert.md"
+STATE_FILE = REPORT_DIR / "alert-state.json"
 
-# --- Helpers ---
 
 def ts():
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
+
 def log(msg):
     print(f"[{ts()}] {msg}", file=sys.stderr)
+
 
 def save_log(data):
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
@@ -71,32 +65,43 @@ def save_log(data):
     history.append(data)
     USAGE_LOG.write_text(json.dumps(history[-100:], indent=2))
 
+
 def write_alert(status, details):
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
-    alert = f"""# OpenRouter Usage Alert
+    ALERT_FILE.write_text(f"""# OpenRouter Usage Alert
 
 **Waktu:** {ts()}
 **Status:** {status}
 
 {details}
-"""
-    ALERT_FILE.write_text(alert)
+""")
+
+
+def get_last_dollar():
+    try:
+        return json.loads(STATE_FILE.read_text()).get("last_dollar", -1)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return -1
+
+
+def save_last_dollar(d):
+    STATE_FILE.write_text(json.dumps({"last_dollar": d}))
+
 
 def switch_model(new_model):
-    """Switch Hermes model via config command."""
     log(f"Switching model to: {new_model}")
     result = subprocess.run(
         ["hermes", "config", "set", "model.default", new_model],
-        capture_output=True, text=True, timeout=30
+        capture_output=True, text=True, timeout=30,
     )
     if result.returncode != 0:
-        log(f"FAILED to switch model: {result.stderr}")
+        log(f"FAILED: {result.stderr}")
         return False
-    log(f"Model switched OK: {result.stdout.strip()}")
+    log(f"Switched OK: {result.stdout.strip()}")
     return True
 
+
 def fetch_credits():
-    """Call OpenRouter credits API."""
     if not API_KEY:
         log("OPENROUTER_API_KEY not set")
         return None
@@ -114,7 +119,6 @@ def fetch_credits():
         log(f"API call failed: {e}")
         return None
 
-# --- Main ---
 
 def main():
     log("Checking OpenRouter credits...")
@@ -138,35 +142,44 @@ def main():
     }
     save_log(entry)
 
+    dollar_now = int(spent)
+    last_dollar = get_last_dollar()
+
     log(f"Spent: ${spent:.4f} / ${total_credits:.2f} (${remaining:.4f} remaining)")
 
+    # Auto-switch at $5
     if spent >= COST_LIMIT:
         write_alert("SWITCHED",
-            f"Biaya melampaui ${COST_LIMIT}.\n"
+            f"Biaya melewati ${COST_LIMIT}.\n"
             f"Akumulasi: ${spent:.2f}\n"
             f"Beralih ke: {BACKUP_MODEL}")
+        log("AUTO-SWITCH!")
         if switch_model(BACKUP_MODEL):
-            log("Model switched successfully")
+            save_last_dollar(dollar_now)
         else:
-            log("Model switch FAILED — manual intervention needed")
+            log("Switch FAILED")
             sys.exit(1)
+        print(f"⚠️ Biaya ${spent:.2f} — beralih ke {BACKUP_MODEL}")
 
-    elif spent >= WARNING_LIMIT:
-        write_alert("WARNING",
-            f"Biaya mendekati batas ${COST_LIMIT}.\n"
-            f"Akumulasi: ${spent:.2f}\n"
-            f"Siapkan model cadangan: {BACKUP_MODEL}")
-        log(f"WARNING: ${spent:.2f} — mendekati limit ${COST_LIMIT}")
+    # Alert every $1
+    elif dollar_now > last_dollar:
+        write_alert("ALERT",
+            f"Biaya mencapai ${dollar_now}.00\n"
+            f"Akumulasi: ${spent:.2f} dari ${total_credits:.2f}")
+        log(f"ALERT: ${dollar_now}.00")
+        save_last_dollar(dollar_now)
+        print(f"💰 Biaya OpenRouter: ${dollar_now}.00 / ${COST_LIMIT}.00")
 
     else:
         log(f"Aman: ${spent:.2f} — di bawah limit")
+
+    # Clean state below $1
+    if spent < 1.0:
         if ALERT_FILE.exists():
             ALERT_FILE.unlink()
+        if STATE_FILE.exists():
+            STATE_FILE.unlink()
 
-    print(f"SPENT={spent:.4f}")
-    print(f"LIMIT={COST_LIMIT:.2f}")
-    status = "SWITCHED" if spent >= COST_LIMIT else ("WARNING" if spent >= WARNING_LIMIT else "OK")
-    print(f"STATUS={status}")
 
 if __name__ == "__main__":
     main()
