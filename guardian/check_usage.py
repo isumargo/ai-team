@@ -18,8 +18,27 @@ from datetime import datetime, timezone
 from pathlib import Path
 from urllib.request import Request, urlopen
 
+# --- Helpers ---
+
+def load_env(path="/root/.hermes/.env"):
+    """Load KEY=VALUE pairs from a .env file."""
+    env = {}
+    try:
+        with open(path) as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith("#"):
+                    continue
+                if "=" in line:
+                    key, _, val = line.partition("=")
+                    env[key.strip()] = val.strip().strip('"').strip("'")
+    except FileNotFoundError:
+        pass
+    return env
+
 # --- Config ---
-API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
+_env = load_env()
+API_KEY = _env.get("OPENROUTER_API_KEY", os.environ.get("OPENROUTER_API_KEY", ""))
 CREDITS_URL = "https://openrouter.ai/api/v1/credits"
 
 # Model thresholds
