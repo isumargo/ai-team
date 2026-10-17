@@ -19,5 +19,12 @@
     "total_usage": 0.525382907,
     "spent": 0.525382907,
     "remaining": 9.474617092999999
+  },
+  {
+    "time": "2026-10-17T12:02:53Z",
+    "total_credits": 10,
+    "total_usage": 0.73170775,
+    "spent": 0.73170775,
+    "remaining": 9.26829225
   }
 ]
