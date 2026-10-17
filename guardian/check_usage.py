@@ -37,13 +37,22 @@ API_KEY = _env.get("OPENROUTER_API_KEY", os.environ.get("OPENROUTER_API_KEY", ""
 CREDITS_URL = "https://openrouter.ai/api/v1/credits"
 
 BACKUP_MODEL = "nvidia/nemotron-3-super-120b-a12b:free"
-COST_LIMIT = 5.00
+
+def load_config():
+    try:
+        return json.loads(CONFIG_FILE.read_text())
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
 
 TEAM_DIR = Path("/root/ai-team")
 REPORT_DIR = TEAM_DIR / "guardian" / "reports"
 USAGE_LOG = REPORT_DIR / "usage-log.json"
 ALERT_FILE = REPORT_DIR / "usage-alert.md"
 STATE_FILE = REPORT_DIR / "alert-state.json"
+CONFIG_FILE = TEAM_DIR / "guardian" / "config.json"
+
+_config = load_config()
+COST_LIMIT = _config.get("cost_limit", 5.00)
 
 
 def ts():

@@ -1,0 +1,1 @@
+{"agent":"guardian","role":"System Administrator","status":"cron","task":"check_usage.py — cek biaya OpenRouter tiap 30 menit","model":"none (Python script)","last_activity":"2026-10-17T15:35:00Z","cost_current":1.10,"cost_limit":5.00}
