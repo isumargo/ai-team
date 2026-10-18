@@ -124,5 +124,194 @@
     "total_usage": 6.363532254,
     "spent": 6.363532254,
     "remaining": 3.636467746
+  },
+  {
+    "time": "2026-10-17T17:12:54Z",
+    "total_credits": 10,
+    "total_usage": 6.544987819,
+    "spent": 6.544987819,
+    "remaining": 3.455012181
+  },
+  {
+    "time": "2026-10-17T17:43:58Z",
+    "total_credits": 10,
+    "total_usage": 6.544987819,
+    "spent": 6.544987819,
+    "remaining": 3.455012181
+  },
+  {
+    "time": "2026-10-17T18:14:53Z",
+    "total_credits": 10,
+    "total_usage": 6.544987819,
+    "spent": 6.544987819,
+    "remaining": 3.455012181
+  },
+  {
+    "time": "2026-10-17T18:45:54Z",
+    "total_credits": 10,
+    "total_usage": 6.544987819,
+    "spent": 6.544987819,
+    "remaining": 3.455012181
+  },
+  {
+    "time": "2026-10-17T19:47:41Z",
+    "total_credits": 10,
+    "total_usage": 6.544987819,
+    "spent": 6.544987819,
+    "remaining": 3.455012181
+  },
+  {
+    "time": "2026-10-17T20:18:40Z",
+    "total_credits": 10,
+    "total_usage": 6.544987819,
+    "spent": 6.544987819,
+    "remaining": 3.455012181
+  },
+  {
+    "time": "2026-10-17T20:49:39Z",
+    "total_credits": 10,
+    "total_usage": 6.544987819,
+    "spent": 6.544987819,
+    "remaining": 3.455012181
+  },
+  {
+    "time": "2026-10-17T21:20:39Z",
+    "total_credits": 10,
+    "total_usage": 6.544987819,
+    "spent": 6.544987819,
+    "remaining": 3.455012181
+  },
+  {
+    "time": "2026-10-17T21:51:39Z",
+    "total_credits": 10,
+    "total_usage": 6.544987819,
+    "spent": 6.544987819,
+    "remaining": 3.455012181
+  },
+  {
+    "time": "2026-10-17T22:22:39Z",
+    "total_credits": 10,
+    "total_usage": 6.544987819,
+    "spent": 6.544987819,
+    "remaining": 3.455012181
+  },
+  {
+    "time": "2026-10-17T22:53:40Z",
+    "total_credits": 10,
+    "total_usage": 6.544987819,
+    "spent": 6.544987819,
+    "remaining": 3.455012181
+  },
+  {
+    "time": "2026-10-17T23:24:39Z",
+    "total_credits": 10,
+    "total_usage": 6.544987819,
+    "spent": 6.544987819,
+    "remaining": 3.455012181
+  },
+  {
+    "time": "2026-10-17T23:55:39Z",
+    "total_credits": 10,
+    "total_usage": 6.544987819,
+    "spent": 6.544987819,
+    "remaining": 3.455012181
+  },
+  {
+    "time": "2026-10-18T00:26:39Z",
+    "total_credits": 10,
+    "total_usage": 6.544987819,
+    "spent": 6.544987819,
+    "remaining": 3.455012181
+  },
+  {
+    "time": "2026-10-18T00:57:39Z",
+    "total_credits": 10,
+    "total_usage": 6.544987819,
+    "spent": 6.544987819,
+    "remaining": 3.455012181
+  },
+  {
+    "time": "2026-10-18T01:28:39Z",
+    "total_credits": 10,
+    "total_usage": 6.544987819,
+    "spent": 6.544987819,
+    "remaining": 3.455012181
+  },
+  {
+    "time": "2026-10-18T01:59:39Z",
+    "total_credits": 10,
+    "total_usage": 6.544987819,
+    "spent": 6.544987819,
+    "remaining": 3.455012181
+  },
+  {
+    "time": "2026-10-18T02:30:39Z",
+    "total_credits": 10,
+    "total_usage": 6.544987819,
+    "spent": 6.544987819,
+    "remaining": 3.455012181
+  },
+  {
+    "time": "2026-10-18T03:01:39Z",
+    "total_credits": 10,
+    "total_usage": 6.544987819,
+    "spent": 6.544987819,
+    "remaining": 3.455012181
+  },
+  {
+    "time": "2026-10-18T03:32:39Z",
+    "total_credits": 10,
+    "total_usage": 6.544987819,
+    "spent": 6.544987819,
+    "remaining": 3.455012181
+  },
+  {
+    "time": "2026-10-18T04:03:39Z",
+    "total_credits": 10,
+    "total_usage": 6.544987819,
+    "spent": 6.544987819,
+    "remaining": 3.455012181
+  },
+  {
+    "time": "2026-10-18T04:31:18Z",
+    "total_credits": 10,
+    "total_usage": 6.544987819,
+    "spent": 6.544987819,
+    "remaining": 3.455012181
+  },
+  {
+    "time": "2026-10-18T04:34:39Z",
+    "total_credits": 10,
+    "total_usage": 6.557754027,
+    "spent": 6.557754027,
+    "remaining": 3.4422459730000003
+  },
+  {
+    "time": "2026-10-18T05:05:40Z",
+    "total_credits": 10,
+    "total_usage": 6.590828521,
+    "spent": 6.590828521,
+    "remaining": 3.4091714790000003
+  },
+  {
+    "time": "2026-10-18T05:36:39Z",
+    "total_credits": 10,
+    "total_usage": 6.590828521,
+    "spent": 6.590828521,
+    "remaining": 3.4091714790000003
+  },
+  {
+    "time": "2026-10-18T06:07:39Z",
+    "total_credits": 10,
+    "total_usage": 6.634177902,
+    "spent": 6.634177902,
+    "remaining": 3.3658220979999998
+  },
+  {
+    "time": "2026-10-18T06:38:39Z",
+    "total_credits": 10,
+    "total_usage": 6.809792922,
+    "spent": 6.809792922,
+    "remaining": 3.1902070780000003
   }
 ]
