@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — {{ block.super }}{% endblock %}
+{% block content %}
+
+<h1 class="text-2xl font-bold mb-6">Dashboard</h1>
+
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+    <div class="bg-white rounded-lg shadow p-4 border-l-4 border-blue-500">
+        <p class="text-sm text-gray-500">Total Stok</p>
+        <p class="text-3xl font-bold">{{ total_stock }} <span class="text-sm font-normal text-gray-400">bks</span></p>
+    </div>
+    <div class="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
+        <p class="text-sm text-gray-500">Revenue Hari Ini</p>
+        <p class="text-3xl font-bold">Rp {{ revenue_today|floatformat:"0" }}</p>
+    </div>
+    <div class="bg-white rounded-lg shadow p-4 border-l-4 border-yellow-500">
+        <p class="text-sm text-gray-500">Reseller Aktif</p>
+        <p class="text-3xl font-bold">{{ total_resellers }}</p>
+    </div>
+    <div class="bg-white rounded-lg shadow p-4 border-l-4 border-red-500">
+        <p class="text-sm text-gray-500">Piutang</p>
+        <p class="text-3xl font-bold">Rp {{ total_credit|floatformat:"0" }}</p>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+    <div class="bg-white rounded-lg shadow p-4">
+        <h2 class="text-lg font-bold mb-3">Pending Payment</h2>
+        <p class="text-3xl font-bold text-red-600">Rp {{ pending_payments|floatformat:"0" }}</p>
+    </div>
+    <div class="bg-white rounded-lg shadow p-4">
+        <h2 class="text-lg font-bold mb-3">Stok Rendah (&lt;100 bks)</h2>
+        {% if low_stock %}
+        <ul class="space-y-1">
+            {% for p in low_stock %}
+            <li>{{ p.name }}: <span class="font-bold text-red-600">{{ p.stock }} bks</span></li>
+            {% endfor %}
+        </ul>
+        {% else %}<p class="text-green-600">Semua stok aman</p>{% endif %}
+    </div>
+</div>
+
+<div class="bg-white rounded-lg shadow p-4">
+    <h2 class="text-lg font-bold mb-3">Transaksi Terbaru</h2>
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="border-b text-left">
+                    <th>Tanggal</th><th>Reseller</th><th>Produk</th>
+                    <th>Jumlah</th><th>Total</th><th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in recent_transactions %}
+                <tr class="border-b">
+                    <td>{{ t.created_at|date:"d/m H:i" }}</td>
+                    <td>{{ t.reseller.name }}</td>
+                    <td>{{ t.product.name }}</td>
+                    <td>{{ t.quantity }}</td>
+                    <td>Rp {{ t.total|floatformat:"0" }}</td>
+                    <td>
+                        {% if t.payment_status == "paid" %}
+                        <span class="text-green-600">Lunas</span>
+                        {% elif t.payment_status == "partial" %}
+                        <span class="text-yellow-600">Cicilan</span>
+                        {% else %}
+                        <span class="text-red-600">Belum</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="text-center py-4 text-gray-400">Belum ada transaksi</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

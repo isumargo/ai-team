@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Daftar Reseller{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">Daftar Reseller</h1>
+<div class="bg-white rounded-lg shadow p-4">
+    <table class="w-full text-sm">
+        <thead><tr class="border-b text-left"><th>Nama</th><th>Telepon</th><th>Tier</th><th>Piutang</th><th>Status</th></tr></thead>
+        <tbody>{% for r in resellers %}
+            <tr class="border-b"><td>{{ r.name }}</td><td>{{ r.phone }}</td><td>{{ r.get_tier_display }}</td><td>Rp {{ r.credit }}</td><td>{% if r.active %}<span class="text-green-600">Aktif</spn>{% else %}<span class="ext-gray-400">Tidak Aktif</span>{% endif %}</td></tr>
+        {% empty %}
+            <tr><td colspan="5" class="text-center py-4 text-gray-400">Belum ada reseler</td></tr>
+        {% endfor %}</tbody>
+    </table>
+</div>
+{% endblock %}

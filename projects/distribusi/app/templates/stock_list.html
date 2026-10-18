@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Daftar Stok{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">Daftar Stok Produk</h1>
+<div class="bg-white rounded-lg shadow p-4">
+    <table class="w-full text-sm">
+        <thead><tr class="border-b text-left"><th>Produk</th><th>SKU</th><th>Modal</th><th>Harga Jual</th><th>Margin</th><th>Stok</th></tr></thead>
+        <tbody>{% for p in products %}
+            <tr class="border-b"><td>{{ p.name }}</td><td>{{ p.sku }}</td><td>Rp {{ p.price_buy }}</td><td>Rp {{ p.price_sell }}</td><td>Rp {{ p.margin_per_unit }}</td><td>{{ p.stock }} bks</td></tr>
+        {% empty %}
+            <tr><td colspan="6" class="text-center py-4 text-gray-400">Belum ada produk</td></tr>
+        {% endfor %}</tbody>
+    </table>
+</div>
+{% endblock %}
