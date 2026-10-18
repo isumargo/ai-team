@@ -77,3 +77,4 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Telegram Bot
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
+OWNER_CHAT_ID = os.getenv("OWNER_CHAT_ID", "")

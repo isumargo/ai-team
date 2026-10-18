@@ -92,3 +92,16 @@ class Transaction(models.Model):
         if not self.total:
             self.total = self.quantity * self.price_per_unit
         super().save(*args, **kwargs)
+
+
+class ChatSession(models.Model):
+    chat_id = models.CharField(max_length=100, unique=True)
+    messages = models.JSONField(default=list)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["-updated_at"]
+
+    def __str__(self):
+        return f"Session {self.chat_id} ({'Active' if self.is_active else 'Inactive'})"

@@ -7,7 +7,7 @@ from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from .models import Product, Reseller, Transaction, StockMovement
-from .parser import parse_message
+from .agent import DasiyahAgent
 from . import commands
 
 def dashboard(request):
@@ -178,37 +178,8 @@ def telegram_webhook(request, token):
             chat_id = data["message"]["chat"]["id"]
             text = data["message"].get("text", "")
             
-            parsed = parse_message(text)
-            
-            if "error" in parsed:
-                reply = f"❌ Format salah.\n\nContoh format:\nJUAL [produk] [qty] bks [reseller]\nCONTOH [produk] [qty] bks [reseller]\nRETUR [produk] [qty] bks [reseller]\nSTOK [produk]\nPIUTANG [reseller]"
-            else:
-                action = parsed.get("action")
-                if action == "JUAL":
-                    reply = commands.process_sales(
-                        parsed["product"], 
-                        parsed["qty"], 
-                        parsed["reseller"], 
-                        parsed.get("price")
-                    )
-                elif action == "CONTOH":
-                    reply = commands.process_sample(
-                        parsed["product"], 
-                        parsed["qty"], 
-                        parsed["reseller"]
-                    )
-                elif action == "RETUR":
-                    reply = commands.process_return(
-                        parsed["product"], 
-                        parsed["qty"], 
-                        parsed["reseller"]
-                    )
-                elif action == "STOK":
-                    reply = commands.get_stock(parsed.get("product"))
-                elif action == "PIUTANG":
-                    reply = commands.get_receivables(parsed.get("reseller"))
-                else:
-                    reply = "❓ Aksi tidak dikenal."
+            agent = DasiyahAgent()
+            reply = agent.process_message(chat_id, text)
             
             send_telegram_message(chat_id, reply)
             

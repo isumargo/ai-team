@@ -376,5 +376,19 @@
     "total_usage": 8.77313017,
     "spent": 8.77313017,
     "remaining": 1.22686983
+  },
+  {
+    "time": "2026-10-18T11:48:39Z",
+    "total_credits": 10,
+    "total_usage": 9.014634105,
+    "spent": 9.014634105,
+    "remaining": 0.9853658949999993
+  },
+  {
+    "time": "2026-10-18T12:06:27Z",
+    "total_credits": 10,
+    "total_usage": 9.412605088,
+    "spent": 9.412605088,
+    "remaining": 0.5873949120000006
   }
 ]
