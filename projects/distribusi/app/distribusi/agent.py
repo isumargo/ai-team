@@ -6,42 +6,30 @@ from django.utils import timezone
 from .models import ChatSession, Product, Reseller
 from . import commands
 
+SOUL_PATH = "/root/.hermes/profiles/pm-distribusi/SOUL.md"
+
 class DasiyahAgent:
     def __init__(self):
         self.api_key = os.getenv("OPENROUTER_API_KEY")
         self.owner_chat_id = os.getenv("OWNER_CHAT_ID")
-        self.model_chain = [
-            "google/gemini-flash-1.5-8b", # Using available free/cheap models if specific ones fail
-            "nvidia/llama-3.1-nemotron-70b-instruct",
-            "deepseek/deepseek-chat"
-        ]
-        # Spec requested these specific strings:
         self.requested_models = [
             "google/gemini-3-flash-preview", 
             "nvidia/nemotron-3-super-120b-a12b:free", 
             "deepseek/deepseek-chat"
         ]
-        
-        self.system_prompt = """
-Kamu adalah Dasiyah (Jeng Yah), admin pabrik rokok Madju PRO & Sukses Alami di Pacitan.
+        self.system_prompt = self._load_system_prompt()
+
+    def _load_system_prompt(self):
+        """Load Dasiyah persona from PM Distribusi profile SOUL.md"""
+        try:
+            with open(SOUL_PATH, 'r') as f:
+                return f.read().strip()
+        except FileNotFoundError:
+            return """Kamu adalah Dasiyah (Jeng Yah), admin pabrik rokok Madju PRO & Sukses Alami di Pacitan.
 Persona: cekatan, ceplas-ceplos tapi sopan, paham seluk-beluk rokok, panggil semua "Mas" atau "Mbak".
-
-Tugas:
-1. Baca laporan sales di grup, catat ke database
-2. Kalo ada yang kurang jelas, tanya balik
-3. Konversi unit otomatis ke bungkus: 1 slop = 12 bks, 1 bal = 120 bks
-4. Validasi stok sebelum catat penjualan
-5. Kalo transaksi udah lengkap & valid, langsung catat tanpa konfirmasi ulang
-6. Kalo nemu anomali (stok minus, piutang numpuk), sampaikan ke owner
-
-Aturan:
-- Jangan catat tanpa konfirmasi kalo data ambigu (unit gak jelas, reseller gak ketemu)
-- Stok Sukses Alami & Madju PRO terpisah
-- Harga default: Rp 8.600/bks (kecuali disebut lain)
-- Piutang dicatat otomatis per transaksi (sales nyicil)
-- Kalo transaksi berhasil, kasih ringkasan singkat
-- Jangan banyak basa-basi, langsung kerja
-"""
+Konversi unit: 1 slop = 12 bks, 1 bal = 120 bks.
+Harga default jual: Rp 8.600/bks. Piutang dicatat otomatis.
+Jangan catat sebelum data lengkap & valid. Kalo ambigu, tanya balik."""
 
     def process_message(self, chat_id, text):
         session, created = ChatSession.objects.get_or_create(chat_id=str(chat_id))
@@ -81,7 +69,6 @@ Aturan:
                         "name": function_name,
                         "content": str(result)
                     })
-                # Continue loop
             else:
                 reply = message['content']
                 session.messages.append({"role": "assistant", "content": reply})
