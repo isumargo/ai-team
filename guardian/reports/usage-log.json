@@ -313,5 +313,40 @@
     "total_usage": 6.809792922,
     "spent": 6.809792922,
     "remaining": 3.1902070780000003
+  },
+  {
+    "time": "2026-10-18T07:09:39Z",
+    "total_credits": 10,
+    "total_usage": 7.347876142,
+    "spent": 7.347876142,
+    "remaining": 2.6521238580000004
+  },
+  {
+    "time": "2026-10-18T07:40:46Z",
+    "total_credits": 10,
+    "total_usage": 7.364178661,
+    "spent": 7.364178661,
+    "remaining": 2.6358213389999996
+  },
+  {
+    "time": "2026-10-18T08:11:39Z",
+    "total_credits": 10,
+    "total_usage": 7.364178661,
+    "spent": 7.364178661,
+    "remaining": 2.6358213389999996
+  },
+  {
+    "time": "2026-10-18T08:42:39Z",
+    "total_credits": 10,
+    "total_usage": 7.364178661,
+    "spent": 7.364178661,
+    "remaining": 2.6358213389999996
+  },
+  {
+    "time": "2026-10-18T09:13:39Z",
+    "total_credits": 10,
+    "total_usage": 7.364178661,
+    "spent": 7.364178661,
+    "remaining": 2.6358213389999996
   }
 ]
