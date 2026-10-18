@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Guardian: OpenRouter cost sanitizer & auto-switch.
 
-- Alerts every $1 increment ($1, $2, $3, $4) via alert file
-- Auto-switch at $5
+- Alerts every $1 increment via alert file
+- Auto-switch at $20 (configurable via config.json)
 - Silent otherwise (stdout empty = no notification to chat)
 """
 
