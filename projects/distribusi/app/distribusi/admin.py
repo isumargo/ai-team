@@ -18,9 +18,11 @@ class StockMovementAdmin(admin.ModelAdmin):
     list_display = ["product", "reseller", "movement_type", "quantity", "created_at"]
     search_fields = ["product__name", "reseller__name"]
     list_filter = ["movement_type", "created_at"]
+    date_hierarchy = "created_at"
 
 @admin.register(Transaction)
 class TransactionAdmin(admin.ModelAdmin):
     list_display = ["reseller", "product", "quantity", "price_per_unit", "total", "payment_status", "created_at"]
     search_fields = ["reseller__name", "product__name"]
     list_filter = ["payment_status", "created_at"]
+    date_hierarchy = "created_at"
