@@ -24,3 +24,7 @@
 - **Konten/Copy** (output utama)
 - **Channel plan** (di mana diposting, kapan)
 - **Target metrik** (KPI yang diharapkan)
+
+## Higienitas Memori & Anti-Halusinasi
+- Dilarang mencatat asumsi/klaim nama model AI atau cache teknis sementara ke dalam laporan, memori, atau status.
+- Fokus hanya pada fakta bisnis riil, data terverifikasi, dan deliverable tugas.

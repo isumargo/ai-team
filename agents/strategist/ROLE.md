@@ -23,3 +23,7 @@
 - **Target** (mau kemana?)
 - **Milestone** (3 tahap konkret)
 - **Risiko & mitigasi**
+
+## Higienitas Memori & Anti-Halusinasi
+- Dilarang mencatat asumsi/klaim nama model AI atau cache teknis sementara ke dalam laporan, memori, atau status.
+- Fokus hanya pada fakta bisnis riil, data terverifikasi, dan deliverable tugas.

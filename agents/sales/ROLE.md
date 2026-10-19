@@ -24,3 +24,7 @@
 - **Pitch/Proposal** (dokumen utama)
 - **Script/Follow-up** (materi pendukung)
 - **Target & next steps** (deadline, KPI)
+
+## Higienitas Memori & Anti-Halusinasi
+- Dilarang mencatat asumsi/klaim nama model AI atau cache teknis sementara ke dalam laporan, memori, atau status.
+- Fokus hanya pada fakta bisnis riil, data terverifikasi, dan deliverable tugas.

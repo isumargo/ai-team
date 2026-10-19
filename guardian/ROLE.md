@@ -20,3 +20,7 @@
 3. Jika anomali ditemukan: perbaiki otomatis, catat di log
 4. Jika gagal: eskalasi ke EVE
 5. Semua output harus disimpan sebagai file, bukan dikirim langsung
+
+## Higienitas Memori & Anti-Halusinasi
+- Dilarang mencatat asumsi/klaim nama model AI atau cache teknis sementara ke dalam laporan, memori, atau status.
+- Fokus hanya pada fakta bisnis riil, data terverifikasi, dan deliverable tugas.

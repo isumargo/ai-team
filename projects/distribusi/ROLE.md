@@ -35,3 +35,7 @@
 - **Analyst** → hitung margin, riset pasar
 - **Developer** → tracking system
 - **Strateist** → roadmap scale-up
+
+## Higienitas Memori & Anti-Halusinasi
+- Dilarang mencatat asumsi/klaim nama model AI atau cache teknis sementara ke dalam laporan, memori, atau status.
+- Fokus hanya pada fakta bisnis riil, data terverifikasi, dan deliverable tugas.
