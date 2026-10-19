@@ -100,7 +100,7 @@ def save_last_dollar(d):
 def switch_model(new_model):
     log(f"Switching model to: {new_model}")
     result = subprocess.run(
-        ["hermes", "config", "set", "model.default", new_model],
+        ["/root/.local/bin/hermes", "config", "set", "model.default", new_model],
         capture_output=True, text=True, timeout=30,
     )
     if result.returncode != 0:
@@ -150,6 +150,21 @@ def main():
         "remaining": remaining,
     }
     save_log(entry)
+    status_file = TEAM_DIR / 'status' / 'guardian.json'
+    try:
+        status_file.write_text(json.dumps({
+            'agent': 'guardian',
+            'role': 'System Administrator',
+            'status': 'cron',
+            'task': 'check_usage.py — cek biaya OpenRouter tiap 30 menit',
+            'model': 'none (Python script)',
+            'last_activity': ts(),
+            'cost_current': round(spent, 2),
+            'cost_limit': COST_LIMIT,
+            'cost_remaining': round(remaining, 2)
+        }, indent=2))
+    except Exception as e:
+        log(f'Failed to update status/guardian.json: {e}')
 
     dollar_now = int(spent)
     last_dollar = get_last_dollar()
