@@ -1,96 +1,5 @@
 [
   {
-    "time": "2026-10-17T09:56:34Z",
-    "total_credits": 10,
-    "total_usage": 0.108576677,
-    "spent": 0.108576677,
-    "remaining": 9.891423323
-  },
-  {
-    "time": "2026-10-17T11:01:32Z",
-    "total_credits": 10,
-    "total_usage": 0.477562848,
-    "spent": 0.477562848,
-    "remaining": 9.522437152
-  },
-  {
-    "time": "2026-10-17T11:31:54Z",
-    "total_credits": 10,
-    "total_usage": 0.525382907,
-    "spent": 0.525382907,
-    "remaining": 9.474617092999999
-  },
-  {
-    "time": "2026-10-17T12:02:53Z",
-    "total_credits": 10,
-    "total_usage": 0.73170775,
-    "spent": 0.73170775,
-    "remaining": 9.26829225
-  },
-  {
-    "time": "2026-10-17T12:33:54Z",
-    "total_credits": 10,
-    "total_usage": 0.909576907,
-    "spent": 0.909576907,
-    "remaining": 9.090423093
-  },
-  {
-    "time": "2026-10-17T13:04:54Z",
-    "total_credits": 10,
-    "total_usage": 0.924186874,
-    "spent": 0.924186874,
-    "remaining": 9.075813126
-  },
-  {
-    "time": "2026-10-17T13:35:54Z",
-    "total_credits": 10,
-    "total_usage": 0.924186874,
-    "spent": 0.924186874,
-    "remaining": 9.075813126
-  },
-  {
-    "time": "2026-10-17T14:06:54Z",
-    "total_credits": 10,
-    "total_usage": 0.924186874,
-    "spent": 0.924186874,
-    "remaining": 9.075813126
-  },
-  {
-    "time": "2026-10-17T14:37:15Z",
-    "total_credits": 10,
-    "total_usage": 1.099817609,
-    "spent": 1.099817609,
-    "remaining": 8.900182391
-  },
-  {
-    "time": "2026-10-17T14:37:20Z",
-    "total_credits": 10,
-    "total_usage": 1.099817609,
-    "spent": 1.099817609,
-    "remaining": 8.900182391
-  },
-  {
-    "time": "2026-10-17T14:37:53Z",
-    "total_credits": 10,
-    "total_usage": 1.116934846,
-    "spent": 1.116934846,
-    "remaining": 8.883065154
-  },
-  {
-    "time": "2026-10-17T15:08:53Z",
-    "total_credits": 10,
-    "total_usage": 1.430894194,
-    "spent": 1.430894194,
-    "remaining": 8.569105806
-  },
-  {
-    "time": "2026-10-17T15:39:53Z",
-    "total_credits": 10,
-    "total_usage": 4.390395823,
-    "spent": 4.390395823,
-    "remaining": 5.609604177
-  },
-  {
     "time": "2026-10-17T15:48:40Z",
     "total_credits": 10,
     "total_usage": 4.931806063,
@@ -397,5 +306,397 @@
     "total_usage": 9.611218468,
     "spent": 9.611218468,
     "remaining": 0.38878153199999943
+  },
+  {
+    "time": "2026-10-18T12:50:39Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-18T13:21:39Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-18T13:52:40Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-18T14:23:39Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-18T14:54:39Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-18T15:25:39Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-18T15:56:41Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-18T16:27:39Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-18T16:58:39Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-18T17:29:39Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-18T18:00:39Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-18T18:31:39Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-18T19:02:39Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-18T19:33:40Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-18T20:04:39Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-18T20:35:39Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-18T21:06:39Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-18T21:37:39Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-18T22:08:39Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-18T22:39:39Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-18T23:10:39Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-18T23:41:39Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T00:12:40Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T00:43:39Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T01:14:39Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T01:45:39Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T02:16:39Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T02:47:39Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T03:18:39Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T03:49:40Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T04:20:39Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T04:51:40Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T05:22:39Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T05:53:12Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T06:24:12Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T06:55:14Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T07:26:12Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T07:57:12Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T08:28:13Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T08:59:12Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T09:30:13Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T10:01:12Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T10:32:12Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T11:03:13Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T11:34:12Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T12:05:12Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T12:36:12Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T13:07:12Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T13:38:13Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T14:09:12Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T14:40:12Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T15:11:12Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T15:42:12Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T16:13:12Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T16:24:43Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
+  },
+  {
+    "time": "2026-10-19T16:25:49Z",
+    "total_credits": 10,
+    "total_usage": 9.86200086,
+    "spent": 9.86200086,
+    "remaining": 0.1379991399999998
   }
 ]

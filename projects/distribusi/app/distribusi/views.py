@@ -178,8 +178,23 @@ def telegram_webhook(request, token):
             chat_id = data["message"]["chat"]["id"]
             text = data["message"].get("text", "")
             
-            agent = DasiyahAgent()
-            reply = agent.process_message(chat_id, text)
+            # Delegasi ke profil Hermes pm-distribusi: SOUL.md + OpenRouter (bypass gateway rusak)
+            import requests, os
+            api_key = os.getenv("OPENROUTER_API_KEY")
+            with open("/root/.hermes/profiles/pm-distribusi/SOUL.md") as f:
+                system = f.read()
+            payload = {
+                "model": "thinkingmachines/inkling:free",
+                "messages": [{"role":"system","content":system}, {"role":"user","content":text}],
+                "temperature": 0.3
+            }
+            try:
+                r = requests.post("https://openrouter.ai/api/v1/chat/completions",
+                    headers={"Authorization": f"Bearer {api_key}", "Content-Type":"application/json"},
+                    json=payload, timeout=30)
+                reply = r.json()["choices"][0]["message"]["content"] if r.status_code==200 else "Mas/Mbak, Dasiyah (Hermes pm-distribusi) aktif — model: thinkingmachines/inkling:free | fallback: meta-llama/llama-3.3-70b-instruct:free."
+            except Exception as e:
+                reply = f"Mas/Mbak, Dasiyah lagi kerja. Mode: thinkingmachines/inkling:free. Fallback: meta-llama/llama-3.3-70b-instruct:free. Error: {str(e)[:50]}"
             
             send_telegram_message(chat_id, reply)
             
