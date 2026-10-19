@@ -3,7 +3,7 @@
   "role": "System Administrator",
   "status": "cron",
   "task": "check_usage.py \u2014 cek biaya OpenRouter tiap 30 menit",
-  "model": "none (Python script)",
+  "model": "auto",
   "last_activity": "2026-10-19T16:25:49Z",
   "cost_current": 9.86,
   "cost_limit": 5.0,

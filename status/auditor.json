@@ -1,1 +1,8 @@
-{"agent":"auditor","role":"Quality Assurance","status":"idle","task":"Standby — menunggu hasil audit","model":"google/gemini-3-flash-preview","last_activity":"2026-10-17T12:00:00Z"}
+{
+  "agent": "auditor",
+  "role": "Quality Assurance",
+  "status": "idle",
+  "task": "Standby \u2014 menunggu hasil audit",
+  "model": "auto",
+  "last_activity": "2026-10-17T12:00:00Z"
+}

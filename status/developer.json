@@ -1,1 +1,8 @@
-{"agent":"developer","role":"Developer Agent","status":"idle","task":"Menunggu perintah dari EVE","model":"deepseek/deepseek-chat","last_activity":"2026-10-17T15:40:00Z"}
+{
+  "agent": "developer",
+  "role": "Developer Agent",
+  "status": "idle",
+  "task": "Menunggu perintah dari EVE",
+  "model": "auto",
+  "last_activity": "2026-10-17T15:40:00Z"
+}

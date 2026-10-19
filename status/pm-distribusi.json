@@ -1,1 +1,8 @@
-{"agent":"pm-distribusi","role":"Project Manager — Distribusi","status":"idle","task":"Project plan selesai — menunggu task berikutnya","model":"google/gemini-3-flash-preview","last_activity":"2026-10-17T12:00:00Z"}
+{
+  "agent": "pm-distribusi",
+  "role": "Project Manager \u2014 Distribusi",
+  "status": "idle",
+  "task": "Project plan selesai \u2014 menunggu task berikutnya",
+  "model": "auto",
+  "last_activity": "2026-10-17T12:00:00Z"
+}

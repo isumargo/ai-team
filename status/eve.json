@@ -1,1 +1,8 @@
-{"agent":"eve","role":"Chief of Staff","status":"aktif","task":"Ngobrol dengan Ical — brainstorming Mission Control","model":"deepseek/deepseek-v4-pro","last_activity":"2026-10-17T15:40:00Z"}
+{
+  "agent": "eve",
+  "role": "Chief of Staff",
+  "status": "aktif",
+  "task": "Ngobrol dengan Ical \u2014 brainstorming Mission Control",
+  "model": "auto",
+  "last_activity": "2026-10-17T15:40:00Z"
+}
