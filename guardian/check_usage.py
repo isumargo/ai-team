@@ -45,7 +45,8 @@ def load_config():
         return {}
 
 TEAM_DIR = Path("/root/ai-team")
-REPORT_DIR = TEAM_DIR / "guardian" / "reports"
+WORKSPACE = TEAM_DIR / "workspace"
+REPORT_DIR = WORKSPACE / "03-agen" / "guardian" / "laporan"
 USAGE_LOG = REPORT_DIR / "usage-log.json"
 ALERT_FILE = REPORT_DIR / "usage-alert.md"
 STATE_FILE = REPORT_DIR / "alert-state.json"
@@ -150,8 +151,9 @@ def main():
         "remaining": remaining,
     }
     save_log(entry)
-    status_file = TEAM_DIR / 'status' / 'guardian.json'
+    status_file = WORKSPACE / '05-status' / 'guardian.json'
     try:
+        status_file.parent.mkdir(parents=True, exist_ok=True)
         status_file.write_text(json.dumps({
             'agent': 'guardian',
             'role': 'System Administrator',

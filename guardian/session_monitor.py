@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 DB = Path("/root/.hermes/state.db")
-COOLDOWN_FILE = Path("/root/ai-team/guardian/reports/session-alert-cooldown.json")
+COOLDOWN_FILE = Path("/root/ai-team/workspace/03-agen/guardian/laporan/session-alert-cooldown.json")
 COOLDOWN_MINUTES = 30  # jangan spam alert
 
 # Threshold (DeepSeek V4 Pro context = 1,048,576)
