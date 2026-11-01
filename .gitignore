@@ -1,9 +1,13 @@
 # JANGAN PUSH — sensitif
 .env
+.env.*
 *.key
 *.pem
+*.sqlite3
+*.db
 **/secrets/
 **/credentials/
+**/gui-credentials.txt
 
 # Config sensitif
 .hermes/.env
@@ -14,6 +18,36 @@ config.yaml
 # Cache & sampah
 __pycache__/
 *.pyc
-/reports/
 *.log
 *.tmp
+.pytest_cache/
+
+# Runtime app (jangan masuk repo; hanya di VPS)
+projects/distribusi/app/venv/
+projects/distribusi/app/media/
+projects/distribusi/app/staticfiles/
+projects/distribusi/app/.env
+projects/distribusi/app/db.sqlite3
+
+# Runtime Hermes / output operasional (path LAMA — dipensiunkan 2026-10-29)
+status/
+guardian/reports/*.json
+agents/*/reports/
+auditor/reports/
+projects/distribusi/reports/
+projects/distribusi/inbox/
+
+# Runtime Hermes / output operasional (path KANONIS di workspace — aktif sejak 2026-10-29)
+# Writer: guardian/check_usage.py (tiap 30m), guardian/session_monitor.py (tiap 15m)
+workspace/05-status/
+workspace/03-agen/guardian/laporan/usage-log.json
+workspace/03-agen/guardian/laporan/usage-alert.md
+workspace/03-agen/guardian/laporan/alert-state.json
+workspace/03-agen/guardian/laporan/session-alert-cooldown.json
+
+# Folder probes Syncthing — hanya untuk uji, JANGAN dihapus tanpa izin Cal
+workspace/00-inbox/
+
+# Syncthing & Obsidian state
+workspace/.stfolder/
+workspace/.obsidian/
