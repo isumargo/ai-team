@@ -4,7 +4,7 @@
 
 **Lokasi kanonis:** `/root/ai-team/workspace/04-proyek/ai-agent-improvement/` (satu-satunya; Syncthing meneruskan ke PC).
 **Repo:** `github.com/isumargo/ai-team`, branch `main`
-**Update terakhir:** 2026-10-29 (handoff sesi output-path migration)
+**Update terakhir:** 2026-11-01 (commit selektif + push, status tim live)
 
 ## Prinsip desain (wajib, atur Cal)
 
@@ -149,11 +149,42 @@ Aturan: handoff ini **satu-satunya** dan tinggal di workspace, jadi otomatis ter
 
 ## Pending (urut rekomendasi)
 
-1. **Pilah git changes dan siapkan commit selektif** — cek daftar file dan secret scan dahulu; belum push.
-2. Rancang status tim live (pilih sumber runtime; jangan jadikan memory sebagai progress log).
-3. Review logika Guardian (threshold/alert/backup/session monitor) — ditunda khusus atas permintaan Cal; jangan ubah logic sebelum pembahasan.
-4. Audit/pulihkan Django distribusi :8080 dan Ruang 3D/Mission Control :3001 — belum ada service/process/firewall changes. Arah: web sales monitoring + Ruang sebagai Mission Control.
-5. Validasi autentikasi GUI Syncthing; tetap loopback-only.
+1. **Review logika Guardian** (threshold/alert/backup/session monitor) — ditunda khusus atas permintaan Cal; jangan ubah logic sebelum pembahasan. Termasuk: konflik threshold $5 (config.json) vs $20 (MEMORY.md), kredit OpenRouter tersisa $0.14 yang masih memicu "SWITCHED" tiap 30 menit, dan backup 196M/200M tanpa exclude venv/node_modules.
+2. **Status GUI Syncthing** — penyebab sudah jelas (Syncthing v1.29.5 tidak menegakkan basic auth di path GUI meski password sudah ter-set). `guardian/syncthing_auth.py` punya guard `--apply` tapi **belum dijalankan**. Dampak terbatas (loopback only).
+3. **Audit/pulihkan Django distribusi :8080 dan Ruang 3D/Mission Control :3001** — belum ada service/process/firewall changes. Arah: web sales monitoring + Ruang sebagai Mission Control.
+4. **Pakai `team.json` sebagai kontrak Ruang 3D** — schema sudah ada (`agents[]`, `jobs[]`, `gateway[]`, `cost{}`, `system{}`). Ruang cukup baca satu file ini, bukan `status/*.json` yang sudah dipensiunkan.
+
+## Selesai di sesi 2026-11-01 (commit selektif + status tim live)
+
+### Commit & push
+
+- Repo `ai-team` sebelumnya tertinggal di `302c46d` dengan ~50 file changed/deleted + 54 untracked. Sekarang 5 commit selektif sudah dipush ke `origin/main` (terakhir `507a08b`):
+  1. `a5ef833` — `.gitignore`: lindungi path runtime kanonis di `workspace/` (sebelumnya hanya path lama yang terlindungi — bug nyata, file runtime baru akan ikut ter-commit).
+  2. `a15c7ae` — konsolidasi dokumen ke `workspace/` (67 file: rename ROLE + hapus duplikat `memo/`, `docs/`, `status/`, `peta/`, `rencana/`).
+  3. `3584ce1` — Guardian output path → workspace (**path-only**, logika tidak berubah) + hapus `guardian/reports/` yang sudah dipensiunkan.
+  4. `a136e43` — status tim live: `team_status.py`, `serve_status.py`, `dashboard/index.html`.
+  5. `507a08b` — `guardian/syncthing_auth.py` dengan guard `--apply` (belum dijalankan).
+- Working tree bersih. Tidak ada secret di history (scan 5 commit bersih). `git ls-tree` mengonfirmasi tidak ada runtime file yang masuk repo.
+- Backup pra-commit: `/root/.hermes/backups/pre-selective-commit-20261101T193138Z/` (git bundle + tar workspace).
+
+### Status tim live
+
+- **Writer tunggal:** `guardian/team_status.py` → `workspace/05-status/team.json`.
+  Sumber runtime: `state.db` utama + `~/.hermes/profiles/<agen>/state.db` (9 profile), `cron/executions.db`, `cron/jobs.json`, `05-status/guardian.json`, `/proc`+`free`+`df`.
+  Script Python biasa tanpa LLM → **nol token**. Atomic write (`os.replace`). Tidak menulis nama model/tier/credential.
+- **Dashboard:** `guardian/dashboard/index.html` (kode, di repo) + `guardian/serve_status.py` (bind `127.0.0.1:9200`, systemd `team-status.service`).
+  URL: `https://hermes.raminesia.com/team-status/` — basic auth via `auth_basic` (user `ical`, file `/etc/nginx/.htpasswd-mc`), TLS dari vhost `hermes.raminesia.com` yang sudah ada.
+- **Cron:** `guardian-team-status` (job id `f962e5af8ce3`), every 10m, `no_agent=true`, shim `~/.hermes/scripts/guardian-team-status.py`.
+- Verifikasi: `/` → 200, `/team.json` → 200 (`application/json`), path lain → 404, `/../etc/passwd` → 404, tanpa kredensial → 401, dengan kredensial → 200. Dashboard Hermes lama tetap normal.
+- Catatan desain: kode dashboard ada di `guardian/dashboard/`, runtime JSON di `workspace/05-status/` (di-ignore git). Servis memakai server sendiri, bukan alias nginx, karena `/root` mode 700 tidak bisa di-traverse worker www-data.
+
+### Temuan yang perlu|Cal tahu
+
+- **GUI Syncthing: password sudah ter-set tapi panel tetap terbuka.** `config.xml` punya `user="ical"` + password + `authMode="static"` + `address="127.0.0.1:8384"`, tapi `GET /` tanpa kredensial tetap 200. Penyebab: Syncthing v1.29.5 tidak menegakkan basic auth pada path GUI — bukan karena password belum diset. Restart Syncthing (yang akan dilakukan `--apply`) tidak memperbaikinya, jadi script **tidak dijalankan**. Dampak terbatas: loopback only, 8384 tidak dibuka ke publik.
+- **Modul `crypt` Python dihapus** di Python 3.14.9 (VPS ini). Verifikasi hash htpasswd di Python butuh dependency tambahan; karena itu auth dashboard diserahkan ke nginx.
+- **`state.db` utama tidak memisahkan session per-agen** (`profile_name` selalu `default`). Data per-agen ada di `state.db` masing-masing profile.
+- **Endpoint Syncthing 404 di v1.29.5:** `/rest/db/status`, `/rest/folder/status`. Yang benar: `/rest/db/completion?folder=workspace` (completion 100%, needItems 0).
+- **`mermaid.min.js` (3.5MB) dipertahankan** — contrary to dugaan awal, file ini adalah **sumber** yang di-inline oleh `sync_map.py` ke `truth-map.html`, bukan duplikat.
 
 ## Keputusan dan batas
 

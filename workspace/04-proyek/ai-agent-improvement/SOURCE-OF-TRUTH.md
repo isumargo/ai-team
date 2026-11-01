@@ -1,7 +1,7 @@
 # Source of Truth — Struktur Environment AI
 
-**Diperbarui:** 2026-10-29
-**Status:** struktur awal diterapkan; audit fungsional masih berjalan.
+**Diperbarui:** 2026-11-01
+**Status:** struktur kanonis aktif; repo GitHub sudah sinkron (push `507a08b`); status tim live berjalan.
 
 ## Prinsip
 
@@ -25,8 +25,10 @@ Satu sumber kanonis per jenis data. Compatibility copy hanya ada bila loader mem
 | Guardian code/config | `/root/ai-team/guardian/` | Hermes cron jobs | Code/config stays. Guardian runtime output goes to workspace `03-agen/guardian/laporan/` and `05-status/` via canonical scripts; cron uses thin Hermes script shims.
 | Status historis | `workspace/04-proyek/ai-agent-improvement/status-audit/archive-2026-10-29/` | Arsip audit | Bukan status live; jangan mengedit |
 | Status Guardian | `/root/ai-team/workspace/05-status/guardian.json` (dibuat Guardian) | Check usage cron script | Output ditulis ke workspace canonical; jangan edit manual |
+| **Status tim live** | `/root/ai-team/workspace/05-status/team.json` (dibuat `guardian/team_status.py`) | Dashboard `guardian/dashboard/index.html`, Ruang 3D (nanti) | **Satu writer**: `guardian/team_status.py`. Tidak boleh ada agen lain yang menulis file ini. Runtime, di-ignore git |
+| **Kode dashboard status** | `/root/ai-team/guardian/dashboard/index.html` + `guardian/serve_status.py` | systemd `team-status.service` (loopback:9200), nginx vhost `hermes.raminesia.com` → `/team-status/` | Kode ada di repo; file runtime JSON tidak |
 | Laporan agen | `/root/ai-team/workspace/03-agen/<agent>/laporan/` | SOUL + ROLE | Semua agen dan auditor menulis ke satu workspace kanonis; folder repo lama dipensiunkan |
-| Git | `/root/ai-team` | GitHub remote | Version history; belum semua perubahan di-commit |
+| Git | `/root/ai-team` | GitHub remote | Version history; working tree bersih per 2026-11-01 |
 
 ## Ruang lingkup sinkronisasi
 
@@ -37,11 +39,11 @@ Satu sumber kanonis per jenis data. Compatibility copy hanya ada bila loader mem
 ## Batasan dan sisa pekerjaan
 
 1. Output laporan agen telah diarahkan ke `workspace/03-agen/<agent>/laporan/`; SOUL, Developer instructions, Guardian scripts, dan cron script path diperbarui. Old repo output directories removed after copy/hash check.
-2. Guardian scripts aktif dan tidak dipindah. Jangan ubah hingga audit job/consumer/threshold/backup selesai dan Cal menyetujui rencana.
+2. Guardian scripts aktif dan tidak dipindah. Jangan ubah hingga audit job/consumer/threshold/backup selesai dan Cal menyetujui rencana. **Status tim live (`team_status.py`) juga bagian Guardian — hanya writer tambahan, tidak mengubah logika job yang ada.**
 3. Django Distribusi code/runtime tetap di `projects/distribusi/app/`; repair nanti harus memperbarui deployment path secara lengkap atau mempertahankan path ini.
 4. PC-sync dua arah telah diuji. Jangan hapus probe tanpa izin.
 5. Workspace cermin dari PC adalah working copy pada folder yang sama melalui Syncthing, bukan direktori terpisah.
-6. Sebelum commit/push, pisahkan perubahan terkait dari Guardian runtime output yang tidak terkait dan audit secret scan.
+6. Before commit/push, pisahkan perubahan terkait dari Guardian runtime output yang tidak terkait dan audit secret scan. **Selesai 2026-11-01** — 5 commit selektif, push `507a08b`. Peringatan: jangan pakai `git add -A`; `.gitignore` hanya melindungi path yang dikomentari eksplisit, dan path runtime kanonis ada di `workspace/`.
 
 ## Validasi
 
@@ -49,3 +51,5 @@ Satu sumber kanonis per jenis data. Compatibility copy hanya ada bila loader mem
 - Handoff/status/plan/docs proyek AI memiliki satu salinan kanonis di `workspace/04-proyek/ai-agent-improvement/`.
 - Tidak ada folder repo `projects/ai-agent-improvement/` lagi.
 - `memo/` root tidak ada; memo kanonis di `workspace/02-memo/`.
+- **2026-11-01**: `git check-ignore` mengonfirmasi 6 file runtime tertosol; `git ls-tree origin/main` mengonfirmasi tidak ada runtime file di repo. Secret scan 5 commit bersih. Working tree bersih.
+- **2026-11-01**: `team_status.py` menghasilkan 10 agen + 3 job; `team.json` valid JSON dan tidak memuat nama model/tier/credential. Dashboard: `/`→200, `/team.json`→200, path lain→404, traversal→404, tanpa kredensial→401, dengan kredensial→200.
