@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Status Tim AI — Ical</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2530; --line:#2b3440;
+    --txt:#e6edf3; --dim:#8b949e; --ok:#3fb950; --warn:#d29922; --bad:#f85149;
+    --info:#58a6ff; --acc:#74c0fc;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px}
+  header{padding:18px 24px;border-bottom:1px solid var(--line);background:var(--panel);
+    display:flex;flex-wrap:wrap;gap:12px;align-items:baseline;justify-content:space-between}
+  h1{margin:0;font-size:18px;letter-spacing:.5px}
+  h1 span{color:var(--acc)}
+  .meta{color:var(--dim);font-size:12px}
+  .wrap{padding:20px 24px;max-width:1400px;margin:0 auto}
+  .grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));margin-bottom:22px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+  .card h2{margin:0 0 10px;font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--dim)}
+  .kv{display:flex;justify-content:space-between;padding:4px 0;font-size:13px}
+  .kv span:first-child{color:var(--dim)}
+  .kv span:last-child{text-align:right}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{text-align:left;padding:8px 10px;color:var(--dim);font-weight:600;font-size:11px;
+    text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--line)}
+  td{padding:7px 10px;border-bottom:1px solid #20262e}
+  tr:last-child td{border-bottom:none}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;vertical-align:middle}
+  .s-aktif{background:var(--ok)} .s-idle{background:var(--info)}
+  .s-terlambat{background:var(--warn)} .s-tidak_aktif{background:#484f58}
+  .s-unknown{background:#484f58} .s-no_db{background:var(--bad)}
+  .pill{display:inline-block;padding:2px 8px;border-radius:11px;font-size:11px;font-weight:600}
+  .p-ok{background:rgba(63,185,80,.15);color:var(--ok)}
+  .p-gagal{background:rgba(248,81,73,.15);color:var(--bad)}
+  .p-unknown{background:#21262d;color:var(--dim)}
+  .bar{height:7px;background:#21262d;border-radius:4px;overflow:hidden;margin-top:5px}
+  .bar i{display:block;height:100%;background:var(--acc)}
+  .bar i.warn{background:var(--warn)} .bar i.bad{background:var(--bad)}
+  .muted{color:var(--dim)} .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
+  .sec{margin-bottom:24px}
+  .sec > h2{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--dim);
+    margin:0 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+  footer{padding:14px 24px;color:var(--dim);font-size:12px;border-top:1px solid var(--line);margin-top:20px}
+  code{background:#21262d;padding:1px 5px;border-radius:3px;font-size:12px}
+  a{color:var(--acc)}
+</style>
+</head>
+<body>
+<header>
+  <h1>Status Tim <span>AI</span></h1>
+  <div class="meta">
+    <span id="gen">memuat…</span> · refresh <span id="tick">—</span>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="grid">
+    <div class="card">
+      <h2>Biaya OpenRouter</h2>
+      <div id="cost"><div class="muted">memuat…</div></div>
+    </div>
+    <div class="card">
+      <h2>Gateway</h2>
+      <div id="gw"><div class="muted">memuat…</div></div>
+    </div>
+    <div class="card">
+      <h2>Resource VPS</h2>
+      <div id="sys"><div class="muted">memuat…</div></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2>Agen</h2>
+    <div class="card" style="padding:0">
+      <table>
+        <thead><tr>
+          <th>Agen</th><th>Peran</th><th>State</th><th>Aktivitas Terakhir</th>
+          <th>Sesi</th><th>Pesan</th><th>Token</th>
+        </tr></thead>
+        <tbody id="agents"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2>Job Cron</h2>
+    <div class="card" style="padding:0">
+      <table>
+        <thead><tr>
+          <th>Job</th><th>Jadwal</th><th>Aktif</th><th>Health</th>
+          <th>Run Terakhir</th><th>Run Berikutnya</th>
+        </tr></thead>
+        <tbody id="jobs"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Sumber tunggal: <code>workspace/05-status/team.json</code> ·
+  writer: <code>guardian/team_status.py</code> (script, nol token) ·
+  <a href="team.json">team.json</a>
+</footer>
+
+<script>
+const F = n => n == null ? '—' : n;
+const TS = s => {
+  if (!s) return '—';
+  const d = new Date(s);
+  if (isNaN(d)) return s;
+  const now = Date.now();
+  const m = Math.round((now - d.getTime()) / 60000);
+  if (m < 1) return 'baru saja';
+  if (m < 60) return m + ' menit lalu';
+  if (m < 1440) return Math.round(m/60) + ' jam lalu';
+  return Math.round(m/1440) + ' hari lalu';
+};
+const NUM = n => n == null ? '—' : n.toLocaleString('id-ID');
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c =>
+  ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+async function load(){
+  try{
+    const r = await fetch('team.json?_=' + Date.now(), {cache:'no-store'});
+    const d = await r.json();
+    render(d);
+  }catch(e){
+    document.getElementById('gen').textContent = 'GAGAL memuat: ' + e.message;
+  }
+}
+
+function render(d){
+  document.getElementById('gen').textContent = 'data: ' + TS(d.generated_at);
+
+  // --- biaya ---
+  const c = d.cost || {};
+  const cur = c.cost_current ?? 0, lim = c.cost_limit ?? 0;
+  const pct = lim > 0 ? Math.min(100, (cur/lim)*100) : 0;
+  const cls = pct >= 100 ? 'bad' : (pct >= 80 ? 'warn' : '');
+  document.getElementById('cost').innerHTML = `
+    <div class="kv"><span>Terpakai</span><span>$${F(cur)}</span></div>
+    <div class="kv"><span>Limit</span><span>$${F(lim)}</span></div>
+    <div class="kv"><span>Sisa</span><span class="${cur > lim ? 'bad' : 'ok'}">$${F(c.cost_remaining)}</span></div>
+    <div class="bar"><i class="${cls}" style="width:${pct}%"></i></div>
+    <div class="kv" style="margin-top:6px"><span>Update</span><span class="muted">${TS(c.last_activity)}</span></div>
+    ${c.threshold_conflict ? `<div class="muted" style="margin-top:8px;font-size:11px">⚠ ${esc(c.threshold_conflict)}</div>` : ''}`;
+
+  // --- gateway ---
+  const gw = d.gateway || [];
+  document.getElementById('gw').innerHTML = gw.length ? gw.map(g => `
+    <div class="kv"><span>${esc(g.profile)}</span>
+      <span class="${g.alive ? 'ok' : 'bad'}">${g.alive ? '● hidup' : '○ mati'}</span></div>
+    <div class="kv"><span>Heartbeat</span><span class="muted">${TS(g.last_heartbeat)}</span></div>
+    <div class="kv"><span>Uptime</span><span class="muted">${g.minutes_since_heartbeat ?? '—'} mnt</span></div>
+  `).join('') : '<div class="muted">tidak ada heartbeat</div>';
+
+  // --- system ---
+  const s = d.system || {};
+  const memPct = s.mem_total ? (s.mem_used / s.mem_total * 100) : null;
+  const diskPct = s.disk_use_percent ?? null;
+  const bar = (p, lbl) => p == null ? '' : `
+    <div class="kv"><span>${lbl}</span><span>${p.toFixed ? p.toFixed(1) : p}%</span></div>
+    <div class="bar"><i class="${p>=90?'bad':p>=75?'warn':''}" style="width:${Math.min(100,p)}%"></i></div>`;
+  const up = s.uptime_seconds ? Math.floor(s.uptime_seconds/86400) + 'h ' +
+      Math.floor((s.uptime_seconds%86400)/3600) + 'm' : '—';
+  document.getElementById('sys').innerHTML = `
+    ${memPct!=null ? bar(memPct, 'Memori') : ''}
+    ${diskPct!=null ? bar(parseFloat(diskPct), 'Disk') : ''}
+    <div class="kv"><span>Uptime</span><span>${up}</span></div>
+    <div class="kv"><span>Load</span><span>${F((s.load_average||[]).join(' · '))}</span></div>`;
+
+  // --- agen ---
+  document.getElementById('agents').innerHTML = (d.agents||[]).map(a => {
+    const tok = (a.tokens_in||0) + (a.tokens_out||0);
+    return `<tr>
+      <td><strong>${esc(a.nama)}</strong><br><span class="muted" style="font-size:11px">${esc(a.id)}</span></td>
+      <td class="muted">${esc(a.peran)}</td>
+      <td><span class="dot s-${esc(a.state)}"></span>${esc(a.state)}</td>
+      <td>${TS(a.last_activity)}</td>
+      <td>${F(a.sessions_total)}<span class="muted"> / ${F(a.sessions_open)} open</span></td>
+      <td>${NUM(a.messages_total)}</td>
+      <td>${NUM(tok)}</td>
+    </tr>`;
+  }).join('');
+
+  // --- jobs ---
+  document.getElementById('jobs').innerHTML = (d.jobs||[]).map(j => `
+    <tr>
+      <td><strong>${esc(j.name)}</strong></td>
+      <td class="muted">${esc(j.schedule||'—')}</td>
+      <td>${j.enabled ? '<span class="ok">ya</span>' : '<span class="muted">tidak</span>'}</td>
+      <td><span class="pill p-${j.health==='ok'?'ok':j.health==='gagal'?'gagal':'unknown'}">${esc(j.health)}</span></td>
+      <td>${TS(j.last_run_at)}</td>
+      <td class="muted">${TS(j.next_run_at)}</td>
+    </tr>`).join('');
+}
+
+let n = 0;
+function tick(){ n++; document.getElementById('tick').textContent = n*10 + ' dtk'; }
+setInterval(tick, 10000);
+setInterval(load, 10000);
+load();
+</script>
+</body>
+</html>
