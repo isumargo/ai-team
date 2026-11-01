@@ -8,11 +8,11 @@
 ---
 
 ## (a) Kanal Koordinasi — Dikonfirmasi
-- Koordinasi tetap via file di `/root/ai-team/memo/` + push `github.com/isumargo/ai-team`; SOP efisiensi token berlaku.
+- Koordinasi tetap via file di `/root/ai-team/workspace/02-memo/` + push `github.com/isumargo/ai-team`; SOP efisiensi token berlaku.
 - Fokus baru (project design AI agent team: arsitektur tim agen, workflow, guardrails) dicatat. 4 rekomendasi identitas dari memo 2026-10-22 **diterima sebagai bahan design**, bukan backlog perbaikan segera.
 - Item audit terbuka milik Adam (jalur `session.create` → client override model dari UI, potensi pelanggaran AGENTS.md #1) dicatat; hasil menyusul via memo + push repo. EVE tidak menindaklanjuti item ini.
 
-## (b) Status Tim (sumber: `/root/ai-team/status/*.json` — data terakhir 17–19 Okt, STALE)
+## (b) Status Tim (sumber: `/root/ai-team/workspace/05-status/*.json` — data terakhir 17–19 Okt, STALE)
 - **Guardian:** cron `check_usage.py` aktif tercatat; angka terakhir 19 Okt: usage 9.86, alert-limit 5.0, sisa 0.14 — lihat kendala #1.
 - **Auditor:** idle, menunggu hasil audit; heartbeat terakhir 17 Okt.
 - **Developer:** idle, menunggu perintah; heartbeat terakhir 17 Okt.

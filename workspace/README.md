@@ -1,32 +1,29 @@
-# AI Team Workspace — Panduan Singkat
+# Workspace AI — dokumen kanonis tim
 
-Ini folder kerja bersama antara VPS dan PC kamu. Master-nya di VPS, PC hanya cermin.
-
-## Aturan
-
-1. **Kamu bebas membaca dan mengedit file di sini.**
-2. Edit-kanmu dibalikkan ke VPS: kirim file yang sudah diubah ke chat EVE, EVE menulisnya ke VPS dan memperbarui mirror ini.
-3. EVE juga menaruh hasil kerja agen di sini setelah lolos audit — biasanya di `03-agen/<nama>/laporan/` atau `04-proyek/`.
-4. folder `99-arsip/` diisi otomatis; laporan lebih tua dari 7 hari dipindah Guardian ke sana.
-5. File rahasia (token, password, key, database) **tidak pernah** ditaruh di folder ini.
+Folder ini adalah **satu-satunya rumah dokumen** tim AI. Isinya tersinkron ke PC lewat Syncthing (`C:\Users\USER\ai-team\Workspace`) sehingga bisa dibaca dan diedit dari Windows.
 
 ## Struktur
 
-| Folder | Isi | Siapa yang menulis |
+| Folder | Isi | Siapa yang edit |
 |---|---|---|
-| `00-inbox/` | draft mentah, belum diaudit | agen |
-| `01-organisasi/` | AGENTS.md, USER.md, peta | EVE + kamu |
-| `02-memo/` | koordinasi Adam ↔ EVE | EVE |
-| `03-agen/*/laporan/` | hasil kerja agen | agen + EVE |
-| `04-proyek/` | rencana, laporan, rilis per proyek | agen + EVE |
-| `05-status/` | snapshot status harian | EVE |
-| `99-arsip/` | laporan tua | Guardian |
+| `00-inbox/` | Masukan dan file uji sinkronisasi | EVE, Cal |
+| `01-organisasi/` | Policy tim, peta arsitektur, profil pengguna | EVE/Adam |
+| `01-organisasi/policy/` | **Canonical policy** + generator salinan runtime | EVE |
+| `02-memo/` | Memo dan korespondensi antar-agen | EVE, Adam |
+| `03-agen/<agent>/` | ROLE tiap agen (metadata peran, bukan persona) | EVE |
+| `04-proyek/<project>/` | Handoff, status, plan, dokumen bisnis | EVE, Cal |
+| `05-status/` | Snapshot status ber-timestamp (jika dipakai) | generator, bukan diedit manual |
+| `99-arsip/` | Arsip lama dengan retensi jelas | EVE |
 
-## Nama file
+## Aturan
 
-Format: `YYYY-MM-DD-<agen>-<judul-pendek>.md` — contoh: `2026-10-28-analyst-margin-madju.md`.
-
-## Sumber kebenaran
-
-- Persona + konfigurasi agen: tetap di VPS `~/.hermes/` — tidak diduplikasi ke sini.
-- Peta organisasi: `01-organisasi/peta/truth-map.md` (teks) + `truth-map.excalidraw` (visual).
+1. **Satu sumber kanonis per jenis data.** Jangan membuat file yang sama di dua folder. Kalau ada compatibility copy (misalnya `AGENTS.md` runtime), itu hasil generate dan wajib dicek.
+2. EditPolicy hanya di `01-organisasi/policy/`, lalu jalankan:
+   ```bash
+   python3 /root/ai-team/workspace/01-organisasi/policy/sync_policy.py --sync
+   python3 /root/ai-team/workspace/01-organisasi/policy/sync_policy.py --check
+   ```
+3. **Tidak ada rahasia di sini.** Jangan masukkan `.env`, token, password, database runtime, venv, atau state Hermes. Folder `projects/distribusi/app/` (kode + DB) tetap di VPS, tidak ikut sinkron.
+4. Folder output runtime (`agents/*/reports`, `guardian/reports`, `status/`) sengaja tetap di repo karena script dan job menunjuk ke sana. Jangan dihapus sebelum path-nya dimigrasikan.
+5. Edit dari PC dan VPS jangan bersamaan untuk file yang sama. Git dan Syncthing bukan pengganti satu sama lain: Git untuk riwayat, Syncthing untuk akses file.
+6. Prinsip desain: Agile, terstruktur, scalable, aman tanpa mengganggu operasional, resilient, aturan jelas, mudah dikembangkan.

@@ -20,12 +20,14 @@
 - Hanya melaporkan hasil LULUS AUDIT ke Ical
 
 ### Guardian Agent
-- **Folder:** /root/ai-team/guardian/
+- **Folder operasional:** /root/ai-team/guardian/
+- **Dokumentasi peran:** /root/ai-team/workspace/03-agen/guardian/ROLE.md
 - **Tugas:** SysAdmin VPS, monitoring resource, self-healing, sanitasi biaya API
 - **Eskalasi:** Lapor ke EVE & Adam jika ada insiden
 
 ### Auditor Agent
-- **Folder:** /root/ai-team/auditor/
+- **Folder operasional:** /root/ai-team/auditor/
+- **Dokumentasi peran:** /root/ai-team/workspace/03-agen/auditor/ROLE.md
 - **Tugas:** QA & review hasil kerja seluruh agen (Layer 1: Teknis)
 - **Output:** Status LULUS / REVISI / TOLAK
 
@@ -48,7 +50,7 @@
 1. **DILARANG MENGGUNAKAN MODEL BERBAYAR** tanpa izin tertulis dari Ical. Seluruh agen dan fallback WAJIB menggunakan tier `:free` (misal Nemotron, Llama-3.3-70b:free, Inkling:free, atau Gemini direct).
 2. Semua hasil kerja agen wajib melalui Auditor sebelum ke EVE/Adam.
 3. Komunikasi antar-agen dilakukan via file (memo padat/to-the-point), bukan chat looping.
-4. EVE berkomunikasi via Telegram; Adam berkoordinasi via Dev/IDE; koordinasi Adam & EVE via file di `/root/ai-team/memo/`.
+4. EVE berkomunikasi via Telegram; Adam berkoordinasi via Dev/IDE; koordinasi Adam & EVE via file di `/root/ai-team/workspace/02-memo/`.
 5. Rekrutmen agen baru harus dicatat di file ini dan dibuatkan ROLE.md.
 6. **SETIAP SELESAI KERJA → PUSH ke github.com/isumargo/ai-team** (wajib, tanpa kecuali).
 
@@ -79,6 +81,18 @@
 - **Dilarang Menyimpan Detail Model:** Dilarang keras mencatat atau mengklaim nama model AI runtime, tier, atau asumsi konfigurasi ke dalam file memori permanen (`MEMORY.md`, `SOUL.md`, `ROLE.md`, status json, atau laporan tugas). Seluruh routing model dikelola terpusat di runtime.
 - **No Self-Model Assumption:** Agen (termasuk EVE) dilarang berspekulasi atau mendikte nama model yang sedang menjalankannya. Jika ada pertanyaan mengenai model yang aktif, arahkan untuk memeriksa status runtime atau command `/model` di Telegram.
 - **Memori Khusus Konteks Stabil:** File memori hanya diperuntukkan bagi konteks bisnis, keputusan arsitektur, dan SOP yang stabil. Dilarang menyimpan cache sementara atau state spekulatif yang berpotensi memicu halusinasi.
+
+### 6. SOP Hemat Request & Kuota (Syncera — WAJIB SEMUA AGEN)
+> Paket bersama 550 request/5 jam + 5.000/minggu (agregat semua key). Biaya = jumlah putaran model (1 putaran = 1 giliran assistant, termasuk tool call).
+
+1. Gabung semua tool call independen & operasi shell jadi satu blok. Hindari langkah dependent.
+2. Anti ping-pong: jangan baca file sama dua kali, jangan "cek dulu -> cek lagi".
+3. Jangan retry otomatis. 401/403/400 → lapor. 429 → STOP, cek X-RateLimit-Reset, lapor.
+4. Subagent = putaran terpisah, mahal. Pakai hanya jika hasil >> biaya.
+5. Kuota menipis → kerjakan 1 output prioritas, tawarkan langkah lanjutan sebagai opsi.
+6. Inspeksi VPS: maks 4-5 putaran/tugas. Tool ditolak 2x → STOP, lapor parsial.
+7. Jangan baca/salin credential di script remote; jangan tampilkan key di chat.
+8. Lapor sebutkan jumlah putaran & request gagal/retry bila relevan.
 
 ## Backup System — Guardian
 - **Cron:** Setiap 6 jam via `backup.py` (no_agent, nol token).

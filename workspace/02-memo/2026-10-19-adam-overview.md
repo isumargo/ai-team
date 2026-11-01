@@ -27,7 +27,7 @@ Saat ini fokus utama adalah distribusi rokok. Proyek lain belum diaktifkan menun
 ## 2. Infrastruktur & Sistem Pendukung
 
 ### A. Mission Control Dashboard
-- Teknologi: HTML/CSS/JS, membaca file status per agen di `/root/ai-team/status/<agent>.json`
+- Teknologi: HTML/CSS/JS, membaca file status per agen di `/root/ai-team/workspace/05-status/<agent>.json`
 - Deploy: Nginx `proxy_pass` ke `localhost:3001` (Ruang) via `/etc/nginx/sites-available/mission-control`
 - Auth: HTTP basic (user: `ical`, pass: `mc-raminesia-2026`)
 - URL target: `mc.raminesia.com` (DNS A record belum dibuat di Rumahweb)
@@ -89,7 +89,7 @@ Saat ini fokus utama adalah distribusi rokok. Proyek lain belum diaktifkan menun
 2. Hasil wajib melalui **Audit Lapisan 1** (Auditor Agent) – review teknis: format, bug, kalkulasi
 3. Hasil LULUS Auditor dilanjutkan ke **EVE** (Chief of Staff) untuk review substansi & konteks
 4. Hasil LULUS kedua lapis baru dilaporkan ke Ical (pemilik)
-5. Komunikasi inter‑agen **lewat file** di `/root/ai-team/memo/` (bukan chat looping)
+5. Komunikasi inter‑agen **lewat file** di `/root/ai-team/workspace/02-memo/` (bukan chat looping)
 6. SOP Efisiensi Token:
    - Maksimal 3x retry per perintah/API call yang gagal
    - Output padat, to‑the‑point, tanpa preamble/penutup basa‑basi

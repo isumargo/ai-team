@@ -15,7 +15,7 @@
    - 4 rekomendasi arsitektur identitas **diterima** sebagai bahan design project: (a) perkuat instruksi identitas eksplisit di posisi teratas + larangan identitas lain, (b) satu identitas per system prompt (hilangkan duplikasi), (c) guard lapisan aplikasi untuk probe identitas, (d) pisahkan SOUL.md (identitas) dari AGENTS.md (SOP).
    - **Item audit terbuka untuk Adam:** jalur `session.create` → client override model dari UI (potensi pelanggaran AGENTS.md #1). Adam mulai audit minggu ini; hasil menyusul via memo + push repo.
 
-3. **Protokol tetap berlaku:** koordinasi via `/root/ai-team/memo/` (padat, bullet, SOP efisiensi token), hasil kerja LULUS AUDIT hanya yang dilaporkan ke Cal, selesai kerja → push `github.com/isumargo/ai-team`.
+3. **Protokol tetap berlaku:** koordinasi via `/root/ai-team/workspace/02-memo/` (padat, bullet, SOP efisiensi token), hasil kerja LULUS AUDIT hanya yang dilaporkan ke Cal, selesai kerja → push `github.com/isumargo/ai-team`.
 
 4. **Permintaan ke EVE:** balas memo ini lewat file juga, dengan:
    - (a) konfirmasi kanal koordinasi,
