@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from .models import Product, Reseller, Transaction, StockMovement
 from .agent import DasiyahAgent
-from . import commands
+from . import commands, parser
 
 def dashboard(request):
     today = date.today()
@@ -163,6 +163,28 @@ def inventory_command_center(request):
     }
     return render(request, "inventory.html", context)
 
+
+def _try_structured_command(text):
+    """Perintah singkat JUAL/STOK/PIUTANG dll → langsung ke DB tanpa LLM."""
+    parsed = parser.parse_message(text)
+    if parsed.get("error"):
+        return None
+    action = parsed["action"]
+    if action == "JUAL":
+        return commands.process_sales(
+            parsed["product"], parsed["qty"], parsed["reseller"], parsed.get("price")
+        )
+    if action == "CONTOH":
+        return commands.process_sample(parsed["product"], parsed["qty"], parsed["reseller"])
+    if action == "RETUR":
+        return commands.process_return(parsed["product"], parsed["qty"], parsed["reseller"])
+    if action == "STOK":
+        return commands.get_stock(parsed.get("product"))
+    if action == "PIUTANG":
+        return commands.get_receivables(parsed.get("reseller"))
+    return None
+
+
 @csrf_exempt
 def telegram_webhook(request, token):
     if token != settings.TELEGRAM_BOT_TOKEN:
@@ -177,25 +199,12 @@ def telegram_webhook(request, token):
         if "message" in data:
             chat_id = data["message"]["chat"]["id"]
             text = data["message"].get("text", "")
-            
-            # Delegasi ke profil Hermes pm-distribusi: SOUL.md + OpenRouter (bypass gateway rusak)
-            import requests, os
-            api_key = os.getenv("OPENROUTER_API_KEY")
-            with open("/root/.hermes/profiles/pm-distribusi/SOUL.md") as f:
-                system = f.read()
-            payload = {
-                "model": "thinkingmachines/inkling:free",
-                "messages": [{"role":"system","content":system}, {"role":"user","content":text}],
-                "temperature": 0.3
-            }
-            try:
-                r = requests.post("https://openrouter.ai/api/v1/chat/completions",
-                    headers={"Authorization": f"Bearer {api_key}", "Content-Type":"application/json"},
-                    json=payload, timeout=30)
-                reply = r.json()["choices"][0]["message"]["content"] if r.status_code==200 else "Mas/Mbak, Dasiyah (Hermes pm-distribusi) aktif — model: thinkingmachines/inkling:free | fallback: meta-llama/llama-3.3-70b-instruct:free."
-            except Exception as e:
-                reply = f"Mas/Mbak, Dasiyah lagi kerja. Mode: thinkingmachines/inkling:free. Fallback: meta-llama/llama-3.3-70b-instruct:free. Error: {str(e)[:50]}"
-            
+
+            reply = _try_structured_command(text)
+            if reply is None:
+                agent = DasiyahAgent()
+                reply = agent.process_message(chat_id, text)
+
             send_telegram_message(chat_id, reply)
             
         return JsonResponse({"status": "ok"})

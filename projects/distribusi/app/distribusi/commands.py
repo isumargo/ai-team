@@ -2,6 +2,14 @@ from django.db import transaction as db_transaction
 from django.db.models import Sum
 from .models import Product, Reseller, StockMovement, Transaction
 
+
+def format_rupiah(value):
+    """Format angka uang gaya Indonesia: 86000 -> '86.000' (pemisah ribuan titik)."""
+    try:
+        return f"{int(value):,}".replace(",", ".")
+    except (TypeError, ValueError):
+        return str(value)
+
 def fuzzy_find_product(name):
     if not name: return None
     # Try exact match first
@@ -61,7 +69,7 @@ def process_sales(product_name, qty, reseller_name, price=None):
         reseller.credit += total_price
         reseller.save()
 
-    return f"✅ Penjualan berhasil: {product.name} x{qty} bks ke {reseller.name} (Total: Rp {total_price:,})."
+    return f"✅ Penjualan berhasil: {product.name} x{qty} bks ke {reseller.name} (Total: Rp {format_rupiah(total_price)})."
 
 def process_sample(product_name, qty, reseller_name):
     product = fuzzy_find_product(product_name)
@@ -132,7 +140,7 @@ def get_receivables(reseller_name=None):
         reseller = fuzzy_find_reseller(reseller_name)
         if not reseller:
             return f"❌ Reseller '{reseller_name}' tidak ditemukan."
-        return f"💸 Piutang {reseller.name}: Rp {reseller.credit:,}"
+        return f"💸 Piutang {reseller.name}: Rp {format_rupiah(reseller.credit)}"
     
     resellers = Reseller.objects.filter(credit__gt=0)
     if not resellers:
@@ -141,7 +149,7 @@ def get_receivables(reseller_name=None):
     lines = ["💸 Daftar Piutang:"]
     total_all = 0
     for r in resellers:
-        lines.append(f"- {r.name}: Rp {r.credit:,}")
+        lines.append(f"- {r.name}: Rp {format_rupiah(r.credit)}")
         total_all += r.credit
-    lines.append(f"\nTotal Semua: Rp {total_all:,}")
+    lines.append(f"\nTotal Semua: Rp {format_rupiah(total_all)}")
     return "\n".join(lines)

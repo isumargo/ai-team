@@ -1,4 +1,5 @@
 import json
+import logging
 import requests
 import os
 from django.conf import settings
@@ -6,18 +7,88 @@ from django.utils import timezone
 from .models import ChatSession, Product, Reseller
 from . import commands
 
+logger = logging.getLogger(__name__)
+
 SOUL_PATH = "/root/.hermes/profiles/pm-distribusi/SOUL.md"
 
 class DasiyahAgent:
     def __init__(self):
         self.api_key = os.getenv("OPENROUTER_API_KEY")
         self.owner_chat_id = os.getenv("OWNER_CHAT_ID")
-        self.requested_models = [
-            "google/gemini-3-flash-preview", 
-            "nvidia/nemotron-3-super-120b-a12b:free", 
-            "deepseek/deepseek-chat"
-        ]
+        self.requested_models = self._load_models_from_profile()
         self.system_prompt = self._load_system_prompt()
+
+    def _load_models_from_profile(self):
+        """Model dari profil Hermes pm-distribusi (tier :free), bukan hardcode.
+
+        Hanya model yang bisa dipanggil via chat-completions API biasa yang dipakai.
+        Sebagian model tier :free dikunci OpenRouter ke 'agentic harness' dan
+        membalas HTTP 403 kalau dipanggil di luar harness — model seperti itu
+        otomatis dilewati.
+        """
+        cfg_path = "/root/.hermes/profiles/pm-distribusi/config.yaml"
+        models = []
+        try:
+            with open(cfg_path) as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith("default:"):
+                        models.append(line.split(":", 1)[1].strip())
+                    elif line.startswith("fallback:") and not line.startswith("fallback_"):
+                        fb = line.split(":", 1)[1].strip()
+                        if fb and fb not in models:
+                            models.append(fb)
+        except OSError:
+            pass
+
+        # Buang model tier :free yang dikunci ke agentic harness (403),
+        # karena app ini memanggil OpenRouter langsung, bukan lewat Hermes.
+        usable = [m for m in models if not self._is_agentic_only(m)]
+        if usable:
+            return usable
+
+        # Cadangan: model tier :free yang terbukti bisa dipanggil via API biasa.
+        return self._load_api_models()
+
+    def _load_api_models(self):
+        """Daftar model cadangan dari file konfigurasi profil."""
+        list_path = "/root/.hermes/profiles/pm-distribusi/api_models.list"
+        models = []
+        try:
+            with open(list_path) as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#"):
+                        models.append(line)
+        except OSError:
+            pass
+        return models
+
+    def _is_agentic_only(self, model):
+        """True kalau model ditolak OpenRouter di luar agentic harness."""
+        try:
+            resp = requests.post(
+                "https://openrouter.ai/api/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {self.api_key}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "model": model,
+                    "messages": [{"role": "user", "content": "ping"}],
+                    "max_tokens": 1,
+                },
+                timeout=15,
+            )
+        except Exception:
+            return True
+        if resp.status_code == 200:
+            return False
+        try:
+            err = resp.json().get("error", {}).get("message", "")
+        except Exception:
+            err = ""
+        return "agentic harness" in err.lower()
 
     def _load_system_prompt(self):
         """Load Dasiyah persona from PM Distribusi profile SOUL.md"""
@@ -215,8 +286,14 @@ Jangan catat sebelum data lengkap & valid. Kalo ambigu, tanya balik."""
                 )
                 if response.status_code == 200:
                     return response.json()
-            except:
+                logger.warning(
+                    "LLM call gagal model=%s http=%s body=%s",
+                    model, response.status_code, response.text[:300],
+                )
+            except Exception as exc:
+                logger.warning("LLM call error model=%s exc=%s", model, exc)
                 continue
+        logger.error("Semua model gagal. Dipakai: %s", self.requested_models)
         return None
 
     def execute_tool(self, name, args, session):
