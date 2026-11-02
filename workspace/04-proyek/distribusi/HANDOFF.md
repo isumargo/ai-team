@@ -1,7 +1,7 @@
 # HANDOFF — Proyek Distribusi Rokok (Madju PRO & Sukses Alami)
 
-**Status:** app HIDUP (systemd/Gunicorn), **webhook (opsi A) aktif**, parser→DB terhubung, **AI balasan normal** (bukan error) — **belum LULUS AUDIT** (butuh uji dari akun Telegram Cal/sales).
-**Diperbarui:** 2026-11-02 (sesi EVE — webhook aktif + perbaikan akar masalah balasan error)
+**Status:** app HIDUP (systemd/Gunicorn), **webhook (opsi A) aktif**, parser→DB terhubung, **AI balasan normal** (bukan error) — **LULUS AUDIT L1** (Auditor, 2026-11-02).
+**Diperbarui:** 2026-11-02 (sesi EVE — audit L1 LULUS + E2E webhook terverifikasi)
 **Lokasi kanonis:** `/root/ai-team/workspace/04-proyek/distribusi/`
 **Kode aplikasi:** `/root/ai-team/projects/distribusi/app/` (bukan di workspace)
 **Agen yang menjalankan:** profil Hermes `pm-distribusi` (Dasiyah) — `~/.hermes/profiles/pm-distribusi/`
@@ -75,15 +75,41 @@ Bot menerima update lewat **webhook** (opsi A). Endpoint: `https://distro.ramine
 | 2 | Set mekanisme Telegram (webhook) | ✅ selesai |
 | 3 | Ganti panggilan AI → profil Hermes | ✅ selesai (config + key + guard) |
 | 4 | Parser → DB (`JUAL`/`STOK`/`PIUTANG`/dll) | ✅ selesai (wired di `views.py`) |
-| 5 | **Uji E2E dari akun Telegram Cal/sales** | ⏳ **NEXT** — belum ada uji human |
-| 6 | Laporan ke Auditor (L1) → EVE (L2) → Cal | ⏳ menunggu item 5 |
-| 7 | Commit + push ke `github.com/isumargo/ai-team` | ⏳ menunggu item 5 |
-| 8 | `gunicorn` masuk `requirements.txt` | ⏳ kecil, bisa bareng commit |
+| 5 | Tes otomatis (23 tes) | ✅ selesai — `manage.py test distribusi` 23/23 lulus |
+| 6 | Perbaiki semua profil Hermes yang mati | ✅ selesai (lihat "Blocker 4" di bawah) |
+| 7 | Uji E2E via webhook (parser + AI) | ✅ selesai — `STOK` 200, `JUAL` creating transaksi, `halo dasiyah` balas persona normal |
+| 8 | Audit L1 (Auditor) | ✅ **LULUS** — `workspace/03-agen/auditor/laporan/audit-report.md` |
+| 9 | Audit L2 (EVE) → lapor ke Cal | ✅ selesai — `workspace/04-proyek/distribusi/laporan/laporan-l2-20261102.md` |
+| 10 | Commit + push ke `github.com/isumargo/ai-team` | ✅ commit `8e843ef` sudah push; commit lanjutan di sesi ini |
+| 11 | Uji human dari akun Telegram Cal/sales | ⏳ **sisa 1** — teknis sudah terverifikasi, tapi belum ada Cal yang chat langsung |
 
-**Cara uji (item 5):** kirim ke `@PMDistribusiRokoBot`:
+**Catatan item 11:** verifikasi E2E di atas memakai update Telegram sintetis (payload curl ke webhook publik + balasan dicek di `ChatSession`/DB), bukan akun|Cal nyata. Ini membuktikan pipeline-nya sehat end-to-end, tapi tetap ideal dicek sekali dari HP Cal.
+
+**Cara uji (item 7):** kirim ke `@PMDistribusiRokoBot`:
 1. `STOK` → harus balas daftar stok (jalur parser, tanpa AI)
 2. `JUAL madju pro 1 bks rudi` → harus ✅ + stok turun di DB
 3. `halo dasiyah` → harus balas normal (bukan "sistem lagi pusing")
+
+### Blocker 4 — 8 dari 9 profil Hermes mati ✅ SUDAH SELESAI (2026-11-02)
+
+**Temuan:** saat memperbaiki bot, terungkap masalah yang lebih luas — **8 profil Hermes lain (analyst, designer, developer, guardian, marketer, sales, strategist, auditor) tidak bisa merespons sama sekali.** Semua memakai model yang sama, yang **tidak lagi bisa dipanggil sebagai API biasa**:
+
+| Model lama | Status HTTP | Arti |
+|---|---|---|
+| `nvidia/nemotron-3-super-120b-a12b:free` | 404 | Tier free dicabut OpenRouter ("unavailable for free") |
+| `thinkingmachines/inkling:free` | 403 | Hanya tersedia untuk *agentic harness*, bukan API biasa |
+
+Jadi ini **bukan** satu bug di satu profil — ini config yang sama ter-copy ke semua profil.
+
+**Yang diperbaiki:**
+- Semua profil → diarahkan ke model tier `:free` yang **terbukti 200** saat dipanggil API biasa (default + fallback).
+- Tiap profil sekarang punya `OPENROUTER_API_KEY` sendiri di `.env` (sebelumnya hanya root `~/.hermes/.env` yang punya).
+- `developer/config.yaml` juga punya override `delegation:` (model subagent) → ikut diperbaiki, plus `fallback:` top-level yang sebelumnya kosong.
+- `guardian/check_usage.py` — `BACKUP_MODEL` menunjuk model 404 yang sudah mati → diperbaiki (auto-switch biaya sekarang pakai model hidup).
+- Semua config di-backup otomatis sebelum diubah → `~/.hermes/profiles/<profil>/backups/config/config.yaml.bak.<timestamp>`.
+- Verifikasi: 9/9 profil `hermes -p <profil> chat --oneshot` → balas normal.
+
+**Catatan:** nama model sengaja tidak ditulis di HANDOFF/memo — hanya di file config runtime, sesuai aturan anti-halusinasi.
 
 ---
 

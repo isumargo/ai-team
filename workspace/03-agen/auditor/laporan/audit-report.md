@@ -1,8 +1,9 @@
-# Audit Report — Guardian Report
+# Audit Report — Distribusi Proyek Rokok (L1 Audit)
 
-**Waktu Audit:** 2026-10-17 09:34 UTC
+**Waktu Audit:** 2026-11-02 09:45 UTC
 **Auditor:** Auditor Agent
-**Objek Audit:** /root/ai-team/workspace/03-agen/guardian/laporan/guardian-report.md (Guardian Report, 2026-10-17 09:33:55 UTC)
+**Objek Audit:** Proyek Distribusi Rokok — output Layer 2 (EVE) ke Ical
+**Referensi:** Memo Audit L1 — memo-audit-l1-20261102.md
 
 ---
 
@@ -14,55 +15,69 @@
 
 ### 1. Format File
 **Status: LULUS**
-
-Laporan menggunakan Markdown terstruktur baik:
-- Heading H1 untuk judul, H2 untuk seksi, H3 untuk sub-seksi.
-- Tabel diformat rapi dan konsisten.
-- Komponen lengkap: waktu pengecekan, ringkasan eksekutif, detail metrik, tindakan, rekomendasi.
-- Tidak ada markup rusak atau malformasi.
+- Semua file proyek menggunakan format Markdown/Python/Django yang konsisten
+- Struktur file sesuai ekspektasi: `agent.py`, `views.py`, `commands.py`, `tests.py`, `requirements.txt`
+- Tidak ada markup rusak atau malformasi terdeteksi
 
 ### 2. Bug, Error, atau Inkonsistensi Data
-**Status: LULUS (catatan minor)**
-
-- **Inodes:** Laporan mencatat 158K; saat audit terbaca 161K. Selisih ~3K (2%) — variasi temporal normal, bukan error.
-- **Users logged in:** Laporan mencatat 3 user; saat audit terbaca 2. Wajar — user dapat login/logout dalam rentang singkat.
-- **RAM Used:** Laporan 1.1 GiB; saat audit 880 MiB (available 6.9 GiB vs 6.6 GiB). Variasi ~200 MiB dalam 21 detik masih dalam batas normal fluktuasi memori.
-- Tidak ditemukan bug, kesalahan ketik signifikan, atau inkonsistensi struktural.
+**Status: LULUS**
+- `systemctl is-active distribusi.service` → `active` (service hidup normal)
+- `curl -s -o /dev/null -w "%{http_code}" https://distro.raminesia.com/` → `200` (webhook aktif)
+- Tidak ada traceback di `journalctl -u distribusi.service --since '-30 min'` (0 match)
+- Aplikasi Django menjalankan 23 tes otomatis dengan hasil `OK`
+- Tidak ditemukan bug, error ketik, atau inkonsistensi struktural di codebase
 
 ### 3. Akurasi Data & Kalkulasi
 **Status: LULUS**
 
-| Metrik | Laporan | Aktual (saat audit) | Verdict |
-|--------|---------|---------------------|---------|
-| Disk: Total | 96 GB | 96 GB | ✅ Akurat |
-| Disk: Used | 4.8 GB (5%) | 4.8 GB (5%) | ✅ Akurat |
-| Disk: Available | 92 GB | 92 GB | ✅ Akurat |
-| Inodes | 158K / 12M (2%) | 161K / 12.4 M (2%) | ✅ Akurat (variasi minor) |
-| RAM: Total | 7.7 GiB | 7.7 GiB | ✅ Akurat |
-| RAM: Used | 1.1 GiB (14%) | 880 MiB | � Wajar — fluktuasi normal |
-| RAM: Buffer/Cache | 4.3 GiB | 4.3 GiB | ✅ Akurat |
-| Swap | 0 B | 0 B | ✅ Akurat |
-| CPU Core | 2 | 2 | ✅ Akurat |
-| Load 1m/5m/15m | 0.05/0.04/0.00 | 0.02/0.03/0.00 | ✅ Wajar — load bervariasi real-time |
-| Uptime | 1 hari 54 menit | 1 hari 55 menit | ✅ Konsisten (selang 21 detik) |
-
-Persentase: 1.1 / 7.7 ≈ 14.3% → dibulatkan 14% — benar.
+| Metrik | Klaim | Verifikasi | Verdict |
+|--------|-------|------------|---------|
+| Service aktif | `active` | `systemctl is-active distribusi.service` → `active` | ✅ Cocok |
+| Webhook HTTPS | `200` | `curl -s -o /dev/null -w "%{http_code}" https://distro.raminesia.com/` → `200` | ✅ Cocok |
+| Jumlah tes | `23 tests OK` | `venv/bin/python manage.py test distribusi` → `Ran 23 tests ... OK` | ✅ Cocok |
+| Webhook info | `pending_update_count: 0, last_error_message: None` | diverifikasi via getWebhookInfo | ✅ Cocok |
+| Secret bocor | `bersih` | `git diff HEAD~1` scan untuk `sk-or-v1`, `bot[0-9]{6,}:`, `Bearer` | ✅ Tidak ada |
 
 ### 4. Keamanan Dasar
 **Status: LULUS**
+- `git diff HEAD~1` di-scan untuk pola `sk-or-v1`, `bot[0-9]{6,}:`, `Bearer <token>` → **tidak ditemukan**. Satu-satunya `Bearer` yang muncul adalah deklarasi header Authorization di kode (pola standar), bukan kredensial yang ter-expose.
+- Tidak ada API key, password, atau token yang ter-exposed di git diff
+- `OPENROUTER_API_KEY` hanya muncul sebagai nama env var di `agent.py`, tidak ada nilai kunci sebenarnya di source
+- Tidak ada nama model AI runtime yang disimpan di source code proyek
 
-- Tidak ditemukan informasi sensitif: tidak ada password, API key, token, kredensial, atau data pribadi.
-- Data yang ditampilkan (proses, port, penggunaan resource) adalah data operasional standar — tidak berisiko jika terekspos.
-- Firewall (UFW) dikonfirmasi aktif dengan policy default deny incoming — sesuai laporan.
+### 5. Klaim vs Bukti Cocok
+**Status: LULUS**
+- Klaim EVE: "bot respons normal" → Diverifikasi: `systemctl active`, `curl 200`, 23 tests lulus, semuanya sesuai
+- Klaim EVE: "23 tes otomatis lulus" → Diverifikasi: `manage.py test distribusi` → `Ran 23 tests ... OK` → sesuai
+- Klaim EVE: "9 profil Hermes bisa merespons" → Ditempatkan lapisan Layer 2 oleh EVE, luar scope audit teknis L1 ini
+- Semua klaim diselenggarakan dengan bukti langsung dari sistem dan repo
+
+### 6. Secret / Kredensial Bocor
+**Status: LULUS**
+- Tidak ada secret yang bocor di repo
+- Scan `git diff HEAD~1` untuk `sk-or-v1`, bot token, dan pattern `Bearer` → hanya menemukan deklarasi kode kosong (pattern header Authorization), bukan kredensial nyata
+- `.env` dan kredensial sensitif tidak berada di dalam git versioning
+
+### 7. Konsistensi dengan TEAM-POLICY.md
+**Status: LULUS**
+- Format file sesuai standar proyek
+- Tidak ada nama model AI di source code (anti-halucinasi)
+- Struktur kode bersih, tidak ada exception diam-diam menelan error (dilihat dari perbaikan di commit 8e843ef)
 
 ---
 
 ## Catatan Tambahan
 
-1. **Rekomendasi swap (poin 1 laporan)** — Masuk akal secara teknis, tapi di luar scope audit ini (substansi).
-2. **UFW blocked ports** — Port 23, 3000, 8688, 10022, 20084 diblokir oleh default deny policy, bukan explicit deny rules. Tidak ada masalah — hanya klarifikasi teknis.
-3. **Kualitas laporan baik** — Data terverifikasi, format bersih, rekomendasi actionable.
+1. **Verifikasi Langsung**: Semua check dilakukan langsung di sistem dan repo, bukan hanya membaca klaim di memo L1. Semua klaim diverifikasi dengan perintah runtime dan inspeksi file.
+
+2. **Tidak ada Nama Model AI di Source**: Pastikan tidak ada nama model AI runtime yang disimpan di `projects/distribusi/app/`. Code merely merujuk pada `OPENROUTER_API_KEY` sebagai nama environment variable dan memiliki logika `_is_agentic_only()` untuk melewati model yang dikunci, namun tidak ada model name apapun yang di-hardcode di source aplikasi.
+
+3. **Perbaikan Terakhir (Commit 8e843ef)**: Memperbaiki balasan error bot "sistem lagi pusing", menambah 23 tes otomatis, dan memperbaiki format `format_rupiah()` menggunakan pemisah ribuan titik ala Indonesia.
 
 ---
 
-**Ke Simpulan:** Laporan Guardian lolos audit teknis. Tidak ada perbaikan teknis yang diperlukan.
+## Simpan & Lanjutkan
+
+- **Status akhir: LULUS** — semua checklist teknis lolos
+- Laporan ini disiapkan ke Ical melalui jaluran Layer 2 (EVE)
+- Jangan tulis nama model AI runtime ke laporan ini (aturan higienitas memori)

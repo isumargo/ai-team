@@ -36,7 +36,10 @@ _env = load_env()
 API_KEY = _env.get("OPENROUTER_API_KEY", os.environ.get("OPENROUTER_API_KEY", ""))
 CREDITS_URL = "https://openrouter.ai/api/v1/credits"
 
-BACKUP_MODEL = "nvidia/nemotron-3-super-120b-a12b:free"
+# Model cadangan saat biaya melewati limit. Harus model tier :free yang
+# bisa dipanggil API biasa (OpenRouter chat/completions) — model yang hanya
+# tersedia untuk agentic harness akan gagal saat dipakai sebagai fallback.
+BACKUP_MODEL = "nvidia/nemotron-3.5-lightning:free"
 
 def load_config():
     try:
