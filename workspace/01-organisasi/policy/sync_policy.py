@@ -42,9 +42,7 @@ DEV_SOURCE = BASE / "DEVELOPER-INSTRUCTIONS.md"
 BACKUP_DIR = Path("/root/.hermes/backups/policy-sync")
 
 TEAM_TARGETS = [
-    Path("/root/AGENTS.md"),
-    Path("/root/.hermes/AGENTS.md"),
-    Path("/root/ai-team/workspace/01-organisasi/AGENTS.md"),
+    Path("/root/ai-team/AGENTS.md"),
 ]
 DEV_TARGET = Path("/root/.hermes/profiles/developer/AGENTS.md")
 

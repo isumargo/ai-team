@@ -19,7 +19,7 @@ FILES_TO_BACKUP = [
     "/root/.hermes/USER.md",
     "/root/.hermes/skills/",
     "/root/.hermes/memories/",
-    "/root/AGENTS.md",
+    "/root/ai-team/AGENTS.md",
 ]
 
 
