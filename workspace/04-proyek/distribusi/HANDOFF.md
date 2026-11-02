@@ -96,8 +96,10 @@ Bot menerima update lewat **webhook** (opsi A). Endpoint: `https://distro.ramine
 
 | Model lama | Status HTTP | Arti |
 |---|---|---|
-| `nvidia/nemotron-3-super-120b-a12b:free` | 404 | Tier free dicabut OpenRouter ("unavailable for free") |
-| `thinkingmachines/inkling:free` | 403 | Hanya tersedia untuk *agentic harness*, bukan API biasa |
+| Model A (`nemotron-3-super-120b…`) | 404 | Tier free dicabut OpenRouter ("unavailable for free") |
+| Model B (`inkling:free`) | 403 | Hanya tersedia untuk *agentic harness*, bukan API biasa |
+
+> Nama model sengaja disamarkan di sini — identitas lengkapnya ada di file config runtime profil, bukan di dokumen tim (aturan anti-halusinasi).
 
 Jadi ini **bukan** satu bug di satu profil — ini config yang sama ter-copy ke semua profil.
 
@@ -108,8 +110,36 @@ Jadi ini **bukan** satu bug di satu profil — ini config yang sama ter-copy ke 
 - `guardian/check_usage.py` — `BACKUP_MODEL` menunjuk model 404 yang sudah mati → diperbaiki (auto-switch biaya sekarang pakai model hidup).
 - Semua config di-backup otomatis sebelum diubah → `~/.hermes/profiles/<profil>/backups/config/config.yaml.bak.<timestamp>`.
 - Verifikasi: 9/9 profil `hermes -p <profil> chat --oneshot` → balas normal.
+  - Catatan: pada batch verifikasi pertama, `auditor` sempat GAGAL 1x (transien — retry langsung `SIAP`, lalu 3x berturut-turut juga `SIAP`). Jadi statusnya **lulus**, bukan flaky kronis.
 
 **Catatan:** nama model sengaja tidak ditulis di HANDOFF/memo — hanya di file config runtime, sesuai aturan anti-halusinasi.
+
+### Blocker 5 — Auto-switch Guardian salah target ⚠️ TERDETEKSI, MENUNGGU KEPUTUSAN CAL (2026-11-02)
+
+**Temuan (baru, di luar cakupan audit L1):**
+
+`guardian/check_usage.py` memanggil `hermes config set model.default ...` **tanpa flag `-p <profil>`**. Efeknya: saat biaya melewati limit, yang diubah **hanya profil root (EVE)** — bukan profil anak (analyst, developer, pm-distribusi, dll) yang justru boros.
+
+Observed saat sesi ini: biaya OpenRouter sudah **$9.86 dari $10** (limit config Guardian $5) → Guardian berhasil switch **root config** → `model.default` EVE ikut berubah.
+
+**Dampak:**
+- Yang **tidak** terpengaruh: guard/sanitasi biaya profil anak — Guardian tidak pernah mengarahkan mereka.
+- Yang **terpengaruh**: profil EVE ditulis ulang tiap 30 menit oleh cron Guardian. harmless selama model switch itu valid, tapi EVE sekarang menjalankan `provider: anthropic` (base_url `api.syncera.id`) dengan `model.default` berupa model OpenRouter — kombinasi yang **tidak sama dengan** routing normal EVE, dan INGIN biaya Syncera (bukan OpenRouter) **tidak dimonitor sama sekali** Guardian (ia cuma cek endpoint `openrouter.ai/api/v1/credits`).
+
+**Status:** kuwait — belum kuubah. Alasannya:
+1. Menambah monitor biaya Syncera = perubahan infra (butuh izin Cal).
+2. Menentukan apakah auto-switch harus kena **semua profil** (bukan cuma root) = perubahan perilaku biaya (batas `$5` vs `$20` masih konflik, lihat catatan di bawah).
+3. Paket bersama Synccera = kuota 550 request/5 jam + 5.000/minggu — batas berbeda dari berbasis dollar, jadi logikanya beda.
+
+**Yang sudah dilakukan:** `BACKUP_MODEL` di `guardian/check_usage.py` diperbaiki agar tidak menunjuk model mati, jadi switch berikutnya tidak jadi no-op.
+
+**Konflik angka batas biaya (butuh keputusan Cal):**
+| Sumber | Batas |
+|---|---|
+| `guardian/config.json` | $5 |
+| Catatan tim lama (MEMORY.md / memo 2026-10-19) | $20 |
+
+Guardian sekarang memakai **$5** (nilai di `guardian/config.json`, yang dibaca `check_usage.py`). Angka $20 belum di-update ke sana.
 
 ---
 
