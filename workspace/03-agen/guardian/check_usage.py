@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""Guardian: OpenRouter cost sanitizer & auto-switch.
+"""Guardian: OpenRouter cost monitor & alert.
 
 - Alerts every $1 increment via alert file
-- Auto-switch at $20 (configurable via config.json)
+- Notifies when exceeding cost_limit (configurable via config.json)
 - Silent otherwise (stdout empty = no notification to chat)
+- DOES NOT touch or switch runtime model configs
 """
 
 import json
 import os
-import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -36,17 +36,6 @@ _env = load_env()
 API_KEY = _env.get("OPENROUTER_API_KEY", os.environ.get("OPENROUTER_API_KEY", ""))
 CREDITS_URL = "https://openrouter.ai/api/v1/credits"
 
-# Model cadangan saat biaya melewati limit. Harus model tier :free yang
-# bisa dipanggil API biasa (OpenRouter chat/completions) — model yang hanya
-# tersedia untuk agentic harness akan gagal saat dipakai sebagai fallback.
-BACKUP_MODEL = "nvidia/nemotron-3.5-lightning:free"
-
-def load_config():
-    try:
-        return json.loads(CONFIG_FILE.read_text())
-    except (FileNotFoundError, json.JSONDecodeError):
-        return {}
-
 TEAM_DIR = Path("/root/ai-team")
 WORKSPACE = TEAM_DIR / "workspace"
 REPORT_DIR = WORKSPACE / "03-agen" / "guardian" / "laporan"
@@ -54,6 +43,14 @@ USAGE_LOG = REPORT_DIR / "usage-log.json"
 ALERT_FILE = REPORT_DIR / "usage-alert.md"
 STATE_FILE = REPORT_DIR / "alert-state.json"
 CONFIG_FILE = TEAM_DIR / "guardian" / "config.json"
+
+
+def load_config():
+    try:
+        return json.loads(CONFIG_FILE.read_text())
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
 
 _config = load_config()
 COST_LIMIT = _config.get("cost_limit", 5.00)
@@ -101,19 +98,6 @@ def save_last_dollar(d):
     STATE_FILE.write_text(json.dumps({"last_dollar": d}))
 
 
-def switch_model(new_model):
-    log(f"Switching model to: {new_model}")
-    result = subprocess.run(
-        ["/root/.local/bin/hermes", "config", "set", "model.default", new_model],
-        capture_output=True, text=True, timeout=30,
-    )
-    if result.returncode != 0:
-        log(f"FAILED: {result.stderr}")
-        return False
-    log(f"Switched OK: {result.stdout.strip()}")
-    return True
-
-
 def fetch_credits():
     if not API_KEY:
         log("OPENROUTER_API_KEY not set")
@@ -154,47 +138,55 @@ def main():
         "remaining": remaining,
     }
     save_log(entry)
-    status_file = WORKSPACE / '05-status' / 'guardian.json'
+    status_file = WORKSPACE / "05-status" / "guardian.json"
     try:
         status_file.parent.mkdir(parents=True, exist_ok=True)
-        status_file.write_text(json.dumps({
-            'agent': 'guardian',
-            'role': 'System Administrator',
-            'status': 'cron',
-            'task': 'check_usage.py — cek biaya OpenRouter tiap 30 menit',
-            'model': 'none (Python script)',
-            'last_activity': ts(),
-            'cost_current': round(spent, 2),
-            'cost_limit': COST_LIMIT,
-            'cost_remaining': round(remaining, 2)
-        }, indent=2))
+        status_file.write_text(
+            json.dumps(
+                {
+                    "agent": "guardian",
+                    "role": "System Administrator",
+                    "status": "cron",
+                    "task": "check_usage.py — cek biaya OpenRouter tiap 30 menit",
+                    "model": "none (Python script)",
+                    "last_activity": ts(),
+                    "cost_current": round(spent, 2),
+                    "cost_limit": COST_LIMIT,
+                    "cost_remaining": round(remaining, 2),
+                },
+                indent=2,
+            )
+        )
     except Exception as e:
-        log(f'Failed to update status/guardian.json: {e}')
+        log(f"Failed to update status/guardian.json: {e}")
 
     dollar_now = int(spent)
     last_dollar = get_last_dollar()
 
     log(f"Spent: ${spent:.4f} / ${total_credits:.2f} (${remaining:.4f} remaining)")
 
-    # Auto-switch at $5
+    # Monitoring alert without touching runtime model configs
     if spent >= COST_LIMIT:
-        write_alert("SWITCHED",
-            f"Biaya melewati ${COST_LIMIT}.\n"
-            f"Akumulasi: ${spent:.2f}\n"
-            f"Beralih ke: {BACKUP_MODEL}")
-        log("AUTO-SWITCH!")
-        if switch_model(BACKUP_MODEL):
+        write_alert(
+            "LIMIT_EXCEEDED",
+            f"Biaya OpenRouter melewati batas limit ${COST_LIMIT:.2f}.\n"
+            f"Akumulasi: ${spent:.2f} dari ${total_credits:.2f}\n"
+            f"(Peringatan saja — tidak mengubah konfigurasi model runtime).",
+        )
+        if dollar_now > last_dollar:
+            log(f"ALERT: Biaya melewati ${COST_LIMIT:.2f} (${spent:.2f})")
             save_last_dollar(dollar_now)
+            print(f"⚠️ Biaya OpenRouter: ${spent:.2f} / ${COST_LIMIT:.2f} (melebihi limit, harap cek saldo/penggunaan)")
         else:
-            log("Switch FAILED")
-            sys.exit(1)
-        print(f"⚠️ Biaya ${spent:.2f} — beralih ke {BACKUP_MODEL}")
+            log(f"Biaya melewati limit: ${spent:.2f} >= ${COST_LIMIT:.2f} (alert sudah dicatat, diam)")
 
-    # Alert every $1
+    # Alert every $1 increment if below limit
     elif dollar_now > last_dollar:
-        write_alert("ALERT",
+        write_alert(
+            "ALERT",
             f"Biaya mencapai ${dollar_now}.00\n"
-            f"Akumulasi: ${spent:.2f} dari ${total_credits:.2f}")
+            f"Akumulasi: ${spent:.2f} dari ${total_credits:.2f}",
+        )
         log(f"ALERT: ${dollar_now}.00")
         save_last_dollar(dollar_now)
         print(f"💰 Biaya OpenRouter: ${dollar_now}.00 / ${COST_LIMIT}.00")
