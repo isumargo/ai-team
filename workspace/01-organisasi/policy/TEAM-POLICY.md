@@ -82,17 +82,19 @@
 - **No Self-Model Assumption:** Agen (termasuk EVE) dilarang berspekulasi atau mendikte nama model yang sedang menjalankannya. Jika ada pertanyaan mengenai model yang aktif, arahkan untuk memeriksa status runtime atau command `/model` di Telegram.
 - **Memori Khusus Konteks Stabil:** File memori hanya diperuntukkan bagi konteks bisnis, keputusan arsitektur, dan SOP yang stabil. Dilarang menyimpan cache sementara atau state spekulatif yang berpotensi memicu halusinasi.
 
-### 6. SOP Hemat Request & Kuota (Syncera — WAJIB SEMUA AGEN)
-> Paket bersama 550 request/5 jam + 5.000/minggu (agregat semua key). Biaya = jumlah putaran model (1 putaran = 1 giliran assistant, termasuk tool call).
+### 6. SOP Efisiensi Token & Kuota Gateway (Clouvia Router — WAJIB SEMUA AGEN)
+> Endpoint Gateway: `https://router.clouvia.id/v1` (OpenAI v1 & Anthropic Messages compatible). Saldo berbasis kuota token prabayar permanen (tanpa hangus). Biaya riil dihitung dari akumulasi Prompt/Context Token + Completion Token pada setiap putaran percakapan.
 
-1. Gabung semua tool call independen & operasi shell jadi satu blok. Hindari langkah dependent.
-2. Anti ping-pong: jangan baca file sama dua kali, jangan "cek dulu -> cek lagi".
-3. Jangan retry otomatis. 401/403/400 → lapor. 429 → STOP, cek X-RateLimit-Reset, lapor.
-4. Subagent = putaran terpisah, mahal. Pakai hanya jika hasil >> biaya.
-5. Kuota menipis → kerjakan 1 output prioritas, tawarkan langkah lanjutan sebagai opsi.
-6. Inspeksi VPS: maks 4-5 putaran/tugas. Tool ditolak 2x → STOP, lapor parsial.
-7. Jangan baca/salin credential di script remote; jangan tampilkan key di chat.
-8. Lapor sebutkan jumlah putaran & request gagal/retry bila relevan.
+1. **Efisiensi Konteks & Input:** Dilarang me-load raw file/log besar ke konteks. Gunakan `search_files` terfilter, `read_file` offset+limit, atau grep/head di shell. Jaga konteks tetap ramping karena seluruh riwayat percakapan dikirim ulang tiap turn.
+2. **Batching Tool Calls:** Wajib menggabungkan pemanggilan tool dan shell commands yang independen dalam 1 putaran asisten. Hindari ping-pong bertahap ("baca 1 file -> tunggu -> baca file lain").
+3. **Respon Padat & Presisi (Output Minimal):** Langsung to-the-point, gunakan bullet points, hilangkan basa-basi / preamble. Untuk pengeditan file, utamakan `patch` tertarget daripada me-generate ulang seluruh file.
+4. **Disiplin Handoff & Kompresi:** Saat percakapan berjalan panjang atau konteks mendekati 75%, lakukan sinkronisasi handoff/state lalu mulai sesi baru untuk mencegah tagihan token berlipat ganda.
+5. **Penanganan Error Gateway Clouvia:**
+   - 401 Unauthorized (`clv_live_...` tidak valid): STOP seketika & laporkan ke Cal.
+   - 402 Payment Required / 429 Rate Limit (Saldo kuota habis atau throttle): STOP seketika, catat error, laporkan ke Cal. Dilarang melakukan auto-retry looping!
+   - 5xx / 503 (Upstream / Gateway failure): Retry maksimal 2x dengan jeda singkat. Jika tetap gagal, STOP dan laporkan kendala upstream router.
+6. **Subagent Governance:** Subagent memakan token dan konteks mandiri. Gunakan subagent HANYA untuk tugas dengan beban komputasi/penalaran tinggi yang butuh isolasi mutlak.
+7. **Keamanan Kunci Rahasia:** API key berformat `clv_live_...` hanya ditampilkan sekali dan bersifat rahasia. Dilarang keras menampilkan key di chat, log, terminal stdout, prompt, atau commit git.
 
 ## Backup System — Guardian
 - **Cron:** Setiap 6 jam via `backup.py` (no_agent, nol token).
